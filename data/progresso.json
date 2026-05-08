@@ -60,48 +60,48 @@
     "checklistId": 1,
     "titulo": "Checklist de Entrada do Funcionário",
     "totalItens": 5,
-    "itensConcluidos": 5,
-    "percentual": 100,
-    "status": "Completo",
+    "itensConcluidos": 2,
+    "percentual": 40,
+    "status": "Em andamento",
     "itens": [
       {
         "itemIndex": 1,
         "item": "Está usando crachá?",
         "marcado": true,
-        "dataConclusao": "07/05/2026, 23:41:41",
-        "dataAlteracao": "07/05/2026, 23:41:41"
+        "dataConclusao": "08/05/2026, 10:23:57",
+        "dataAlteracao": "08/05/2026, 10:23:57"
       },
       {
         "itemIndex": 0,
         "item": "Está usando uniforme completo?",
         "marcado": true,
-        "dataConclusao": "07/05/2026, 23:41:34",
-        "dataAlteracao": "07/05/2026, 23:41:34"
+        "dataConclusao": "08/05/2026, 10:23:53",
+        "dataAlteracao": "08/05/2026, 10:23:53"
       },
       {
         "itemIndex": 2,
         "item": "Está usando EPI obrigatório?",
-        "marcado": true,
-        "dataConclusao": "07/05/2026, 23:41:41",
-        "dataAlteracao": "07/05/2026, 23:41:41"
+        "marcado": false,
+        "dataConclusao": null,
+        "dataAlteracao": "08/05/2026, 10:23:51"
       },
       {
         "itemIndex": 3,
         "item": "Recebeu orientação do líder?",
-        "marcado": true,
-        "dataConclusao": "07/05/2026, 23:41:42",
-        "dataAlteracao": "07/05/2026, 23:41:42"
+        "marcado": false,
+        "dataConclusao": null,
+        "dataAlteracao": "08/05/2026, 10:23:52"
       },
       {
         "itemIndex": 4,
         "item": "Está apto para iniciar a atividade?",
-        "marcado": true,
-        "dataConclusao": "07/05/2026, 23:41:43",
-        "dataAlteracao": "07/05/2026, 23:41:43"
+        "marcado": false,
+        "dataConclusao": null,
+        "dataAlteracao": "08/05/2026, 10:23:52"
       }
     ],
     "dataCriacao": "07/05/2026, 23:41:34",
-    "dataAtualizacao": "07/05/2026, 23:41:43"
+    "dataAtualizacao": "08/05/2026, 10:23:57"
   },
   {
     "id": 1778208106187,
@@ -132,5 +132,28 @@
     ],
     "dataCriacao": "07/05/2026, 23:41:46",
     "dataAtualizacao": "07/05/2026, 23:41:46"
+  },
+  {
+    "id": 1778246642683,
+    "funcionarioId": 2,
+    "funcionario": "Funcionário Teste",
+    "usuario": "funcionario",
+    "checklistId": 1778187153298,
+    "titulo": "Conferencia",
+    "totalItens": 1,
+    "itensConcluidos": 1,
+    "percentual": 100,
+    "status": "Completo",
+    "itens": [
+      {
+        "itemIndex": 0,
+        "item": "a",
+        "marcado": true,
+        "dataConclusao": "08/05/2026, 10:24:02",
+        "dataAlteracao": "08/05/2026, 10:24:02"
+      }
+    ],
+    "dataCriacao": "08/05/2026, 10:24:02",
+    "dataAtualizacao": "08/05/2026, 10:24:02"
   }
 ]
