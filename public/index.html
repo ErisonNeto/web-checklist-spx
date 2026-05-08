@@ -565,7 +565,7 @@
       position: relative;
       overflow: hidden;
       min-width: 0;
-      animation: fadeUp .28s ease both;
+      animation: fadeUp .18s ease both;
     }
 
     .stat-card:hover {
@@ -876,7 +876,7 @@
       }
 
       .app-shell.sidebar-collapsed .sidebar {
-        width: min(86vw, 320px);
+        width: min(88vw, 340px);
         padding: 18px;
       }
 
@@ -899,10 +899,11 @@
 
       .sidebar {
         position: fixed;
-        width: min(86vw, 320px);
-        height: 100vh;
+        width: min(88vw, 340px);
+        height: 100dvh;
         padding: 18px;
         transform: translateX(-105%);
+        box-shadow: 18px 0 45px rgba(15, 23, 42, .28);
       }
 
       .app-shell.mobile-open .sidebar {
@@ -929,25 +930,28 @@
 
       .nav-area {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr;
         gap: 8px;
       }
 
       .nav-btn {
         margin-bottom: 0;
-        justify-content: center;
-        text-align: center;
+        justify-content: flex-start;
+        text-align: left;
       }
 
       .sidebar-footer {
         position: static;
-        margin-top: 14px;
+        margin-top: 18px;
       }
 
       .content {
         padding: 18px;
         margin-left: 0;
         width: 100%;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
       }
 
       .topbar {
@@ -973,23 +977,76 @@
         width: 100%;
       }
 
-      table {
-        min-width: 680px;
-      }
-
       .mobile-table-hint {
-        display: block;
+        display: none;
       }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: .01ms !important;
+      .table-wrap {
+        overflow: visible;
+        border-radius: 0;
+      }
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: grid;
+        gap: 12px;
+      }
+
+      tr {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .055);
+      }
+
+      tr:hover td {
+        background: transparent;
+      }
+
+      td {
+        border-bottom: 1px solid #eef0f4;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        text-align: right;
+      }
+
+      td:last-child {
+        border-bottom: none;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: 900;
+        color: var(--muted);
+        text-align: left;
+        min-width: 105px;
+        max-width: 45%;
+      }
+
+      td > * {
+        max-width: 55%;
+      }
+
+      .progress {
+        min-width: 115px;
       }
     }
 
@@ -1066,6 +1123,383 @@
         max-width: unset;
       }
     }
+
+    /* =========================
+       MOBILE FIRST FIX FINAL
+       Corrige iPhone/Android: tabelas viram cards, menu fica acessível e nada corta na lateral.
+    ========================= */
+    @media (max-width: 1024px) {
+      body {
+        overflow-x: hidden !important;
+      }
+
+      .app-shell {
+        display: block !important;
+        width: 100% !important;
+        min-height: 100dvh !important;
+      }
+
+      .content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100dvh !important;
+        height: auto !important;
+        overflow: visible !important;
+        padding: calc(14px + env(safe-area-inset-top)) 14px 18px !important;
+      }
+
+      .mobile-menu-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        position: sticky !important;
+        top: calc(8px + env(safe-area-inset-top)) !important;
+        z-index: 24 !important;
+        width: auto !important;
+        min-width: 118px !important;
+        background: #111827 !important;
+        color: #fff !important;
+        border-radius: 14px !important;
+        padding: 12px 16px !important;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, .18) !important;
+      }
+
+      .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: min(86vw, 330px) !important;
+        height: 100dvh !important;
+        padding: calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom)) !important;
+        transform: translateX(-105%) !important;
+        overflow-y: auto !important;
+        z-index: 40 !important;
+      }
+
+      .app-shell.mobile-open .sidebar {
+        transform: translateX(0) !important;
+      }
+
+      .sidebar-overlay {
+        display: none !important;
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(15, 23, 42, .55) !important;
+        backdrop-filter: blur(2px) !important;
+        z-index: 35 !important;
+      }
+
+      .app-shell.mobile-open .sidebar-overlay {
+        display: block !important;
+      }
+
+      .sidebar-footer {
+        position: static !important;
+        margin-top: 18px !important;
+      }
+
+      .nav-area {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+      }
+
+      .nav-btn {
+        justify-content: flex-start !important;
+        text-align: left !important;
+        width: 100% !important;
+      }
+
+      .topbar {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        margin-top: 16px !important;
+      }
+
+      .topbar h1 {
+        font-size: clamp(26px, 8vw, 34px) !important;
+        line-height: 1.08 !important;
+      }
+
+      .topbar p {
+        font-size: 16px !important;
+        line-height: 1.35 !important;
+      }
+
+      .status-pill {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+
+      .grid,
+      .grid-2,
+      .grid-4,
+      .management-layout,
+      .form-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      .card,
+      .stat-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 18px !important;
+        padding: 20px !important;
+        margin-bottom: 16px !important;
+      }
+
+      .stat-card strong {
+        font-size: 34px !important;
+      }
+
+      .card-header {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+
+      .card h2 {
+        font-size: clamp(26px, 7vw, 34px) !important;
+        line-height: 1.1 !important;
+      }
+
+      .card .desc {
+        font-size: 16px !important;
+        line-height: 1.35 !important;
+      }
+
+      .table-wrap {
+        overflow: visible !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .mobile-table-hint {
+        display: none !important;
+      }
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      thead {
+        display: none !important;
+      }
+
+      tbody {
+        display: grid !important;
+        gap: 12px !important;
+      }
+
+      tr {
+        background: #ffffff !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 16px !important;
+        padding: 14px !important;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .06) !important;
+        overflow: hidden !important;
+      }
+
+      td {
+        display: grid !important;
+        grid-template-columns: 112px minmax(0, 1fr) !important;
+        gap: 12px !important;
+        align-items: start !important;
+        text-align: left !important;
+        padding: 11px 0 !important;
+        border-bottom: 1px solid #eef0f4 !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+      }
+
+      td:last-child {
+        border-bottom: none !important;
+      }
+
+      td::before {
+        content: attr(data-label) !important;
+        color: var(--muted) !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        letter-spacing: .3px !important;
+        line-height: 1.25 !important;
+      }
+
+      td > * {
+        max-width: 100% !important;
+      }
+
+      .badge {
+        max-width: 100% !important;
+        white-space: normal !important;
+        text-align: center !important;
+        justify-content: center !important;
+      }
+
+      .progress {
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+
+      .btn {
+        width: 100% !important;
+        white-space: normal !important;
+      }
+
+      .btn.small {
+        width: auto !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .content {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+      }
+
+      .card,
+      .stat-card {
+        padding: 18px !important;
+        border-radius: 16px !important;
+      }
+
+      td {
+        grid-template-columns: 96px minmax(0, 1fr) !important;
+        gap: 10px !important;
+      }
+
+      .topbar h1,
+      .card h2 {
+        font-size: 28px !important;
+      }
+    }
+
+    /* MOBILE DINÂMICO: troca tabelas por cards sem cortar informação */
+    .desktop-only {
+      display: block;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    .mobile-list {
+      display: grid;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .mobile-record {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
+      overflow: hidden;
+    }
+
+    .mobile-record-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .mobile-record-title strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.25;
+      color: var(--secondary);
+      overflow-wrap: anywhere;
+    }
+
+    .mobile-record-title span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+      overflow-wrap: anywhere;
+    }
+
+    .mobile-row {
+      display: grid;
+      grid-template-columns: 105px minmax(0, 1fr);
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid #eef0f4;
+      align-items: start;
+    }
+
+    .mobile-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      line-height: 1.25;
+    }
+
+    .mobile-value {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      min-width: 0;
+    }
+
+    .mobile-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .desktop-only {
+        display: none !important;
+      }
+
+      .mobile-only {
+        display: block !important;
+      }
+
+      .mobile-only .badge {
+        white-space: normal !important;
+        text-align: center !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .mobile-record {
+        padding: 14px;
+        border-radius: 16px;
+      }
+
+      .mobile-row {
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .mobile-record-title {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 
@@ -1134,6 +1568,20 @@
           usuarioRolando = false;
         }, 900);
       }, { passive: true });
+    }
+
+    function aplicarLabelsTabelas() {
+      document.querySelectorAll("table").forEach((table) => {
+        const headers = Array.from(table.querySelectorAll("thead th")).map((th) => th.textContent.trim());
+
+        table.querySelectorAll("tbody tr").forEach((row) => {
+          Array.from(row.children).forEach((cell, index) => {
+            if (!cell.getAttribute("data-label") && headers[index]) {
+              cell.setAttribute("data-label", headers[index]);
+            }
+          });
+        });
+      });
     }
 
     function sidebarColapsada() {
@@ -1428,6 +1876,8 @@
       if (telaAtual === "atividades") renderAtividadesAdmin();
       if (telaAtual === "usuarios") renderUsuariosAdmin();
       if (telaAtual === "respostas") renderHistoricoAdmin();
+
+      aplicarLabelsTabelas();
     }
 
     function renderDashboard() {
@@ -1508,40 +1958,73 @@
         return `<div class="empty">Nenhum funcionário com performance registrada ainda.</div>`;
       }
 
-      return `
-        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Funcionário</th>
-                <th>Total</th>
-                <th>Completos</th>
-                <th>Incompletos</th>
-                <th>Média</th>
-                <th>Última atividade</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${lista.map(item => `
+      const tabela = `
+        <div class="desktop-only">
+          <div class="table-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
-                  <td>${item.total}</td>
-                  <td>${item.completos}</td>
-                  <td>${item.incompletos}</td>
-                  <td>
-                    <strong>${item.media}%</strong>
-                    <div class="progress">
-                      <div class="progress-bar" style="width:${item.media}%"></div>
-                    </div>
-                  </td>
-                  <td>${h(item.ultimaAtividade)}</td>
+                  <th>Funcionário</th>
+                  <th>Total</th>
+                  <th>Completos</th>
+                  <th>Incompletos</th>
+                  <th>Média</th>
+                  <th>Última atividade</th>
                 </tr>
-              `).join("")}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${lista.map(item => `
+                  <tr>
+                    <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
+                    <td>${item.total}</td>
+                    <td>${item.completos}</td>
+                    <td>${item.incompletos}</td>
+                    <td>
+                      <strong>${item.media}%</strong>
+                      <div class="progress">
+                        <div class="progress-bar" style="width:${item.media}%"></div>
+                      </div>
+                    </td>
+                    <td>${h(item.ultimaAtividade)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
+
+      const cards = `
+        <div class="mobile-only">
+          <div class="mobile-list">
+            ${lista.map(item => `
+              <article class="mobile-record">
+                <div class="mobile-record-title">
+                  <div>
+                    <strong>${h(item.funcionario)}</strong>
+                    <span>${h(item.usuario)}</span>
+                  </div>
+                  <span class="badge ${item.media >= 80 ? "success" : item.media >= 50 ? "info" : "danger"}">${item.media}%</span>
+                </div>
+
+                <div class="mobile-row"><div class="mobile-label">Total</div><div class="mobile-value">${item.total}</div></div>
+                <div class="mobile-row"><div class="mobile-label">Completos</div><div class="mobile-value">${item.completos}</div></div>
+                <div class="mobile-row"><div class="mobile-label">Pendentes</div><div class="mobile-value">${item.incompletos}</div></div>
+                <div class="mobile-row">
+                  <div class="mobile-label">Média</div>
+                  <div class="mobile-value">
+                    ${item.media}%
+                    <div class="progress"><div class="progress-bar" style="width:${item.media}%"></div></div>
+                  </div>
+                </div>
+                <div class="mobile-row"><div class="mobile-label">Última</div><div class="mobile-value">${h(item.ultimaAtividade)}</div></div>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      return tabela + cards;
     }
 
     function renderTabelaConclusoes(lista) {
@@ -1549,43 +2032,73 @@
         return `<div class="empty">Nenhuma conclusão registrada até o momento.</div>`;
       }
 
-      return `
-        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Funcionário</th>
-                <th>Atividade</th>
-                <th>Status</th>
-                <th>Conclusão</th>
-                <th>Última atualização</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${lista.slice().reverse().map(item => `
+      const tabela = `
+        <div class="desktop-only">
+          <div class="table-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
-                  <td>${h(item.titulo)}</td>
-                  <td>
-                    <span class="badge ${item.status === "Completo" ? "success" : "danger"}">
-                      ${h(item.status)}
-                    </span>
-                  </td>
-                  <td>
-                    <strong>${item.percentual || 0}%</strong>
-                    <div class="progress">
-                      <div class="progress-bar" style="width:${item.percentual || 0}%"></div>
-                    </div>
-                    <span style="color:var(--muted);font-size:12px;">${item.itensConcluidos}/${item.totalItens} itens concluídos</span>
-                  </td>
-                  <td>${h(item.dataAtualizacao || "-")}</td>
+                  <th>Funcionário</th>
+                  <th>Atividade</th>
+                  <th>Status</th>
+                  <th>Conclusão</th>
+                  <th>Última atualização</th>
                 </tr>
-              `).join("")}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${lista.slice().reverse().map(item => `
+                  <tr>
+                    <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
+                    <td>${h(item.titulo)}</td>
+                    <td>
+                      <span class="badge ${item.status === "Completo" ? "success" : "danger"}">
+                        ${h(item.status)}
+                      </span>
+                    </td>
+                    <td>
+                      <strong>${item.percentual || 0}%</strong>
+                      <div class="progress"><div class="progress-bar" style="width:${item.percentual || 0}%"></div></div>
+                      <span style="color:var(--muted);font-size:12px;">${item.itensConcluidos}/${item.totalItens} itens concluídos</span>
+                    </td>
+                    <td>${h(item.dataAtualizacao || "-")}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
+
+      const cards = `
+        <div class="mobile-only">
+          <div class="mobile-list">
+            ${lista.slice().reverse().map(item => `
+              <article class="mobile-record">
+                <div class="mobile-record-title">
+                  <div>
+                    <strong>${h(item.funcionario)}</strong>
+                    <span>${h(item.usuario)}</span>
+                  </div>
+                  <span class="badge ${item.status === "Completo" ? "success" : "danger"}">${h(item.status)}</span>
+                </div>
+
+                <div class="mobile-row"><div class="mobile-label">Atividade</div><div class="mobile-value">${h(item.titulo)}</div></div>
+                <div class="mobile-row">
+                  <div class="mobile-label">Conclusão</div>
+                  <div class="mobile-value">
+                    ${item.percentual || 0}%
+                    <div class="progress"><div class="progress-bar" style="width:${item.percentual || 0}%"></div></div>
+                    <span style="color:var(--muted);font-size:12px;">${item.itensConcluidos}/${item.totalItens} itens</span>
+                  </div>
+                </div>
+                <div class="mobile-row"><div class="mobile-label">Atualizado</div><div class="mobile-value">${h(item.dataAtualizacao || "-")}</div></div>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      return tabela + cards;
     }
 
     function renderAtividadesAdmin() {
@@ -1654,35 +2167,58 @@
         return `<div class="empty">Nenhuma atividade cadastrada.</div>`;
       }
 
-      return `
-        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Atividade</th>
-                <th>Setor</th>
-                <th>Atribuição</th>
-                <th>Itens</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${lista.map(item => `
+      const tabela = `
+        <div class="desktop-only">
+          <div class="table-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td><strong>${h(item.titulo)}</strong><br><span style="color:var(--muted);">${h(item.descricao || "Sem descrição")}</span></td>
-                  <td>${h(item.setor)}</td>
-                  <td><span class="badge info">${h(item.funcionarioNome || "Todos")}</span></td>
-                  <td>${item.itens ? item.itens.length : 0}</td>
-                  <td>
-                    <button class="btn small danger" onclick="excluirAtividade(${item.id})">Excluir</button>
-                  </td>
+                  <th>Atividade</th>
+                  <th>Setor</th>
+                  <th>Atribuição</th>
+                  <th>Itens</th>
+                  <th>Ação</th>
                 </tr>
-              `).join("")}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${lista.map(item => `
+                  <tr>
+                    <td><strong>${h(item.titulo)}</strong><br><span style="color:var(--muted);">${h(item.descricao || "Sem descrição")}</span></td>
+                    <td>${h(item.setor)}</td>
+                    <td><span class="badge info">${h(item.funcionarioNome || "Todos")}</span></td>
+                    <td>${item.itens ? item.itens.length : 0}</td>
+                    <td><button class="btn small danger" onclick="excluirAtividade(${item.id})">Excluir</button></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
+
+      const cards = `
+        <div class="mobile-only">
+          <div class="mobile-list">
+            ${lista.map(item => `
+              <article class="mobile-record">
+                <div class="mobile-record-title">
+                  <div>
+                    <strong>${h(item.titulo)}</strong>
+                    <span>${h(item.descricao || "Sem descrição")}</span>
+                  </div>
+                  <span class="badge info">${h(item.funcionarioNome || "Todos")}</span>
+                </div>
+
+                <div class="mobile-row"><div class="mobile-label">Setor</div><div class="mobile-value">${h(item.setor)}</div></div>
+                <div class="mobile-row"><div class="mobile-label">Itens</div><div class="mobile-value">${item.itens ? item.itens.length : 0}</div></div>
+                <div class="mobile-actions"><button class="btn small danger" onclick="excluirAtividade(${item.id})">Excluir atividade</button></div>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      return tabela + cards;
     }
 
     async function criarAtividade() {
@@ -1800,37 +2336,53 @@
         return `<div class="empty">Nenhum usuário cadastrado.</div>`;
       }
 
-      return `
-        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Usuário</th>
-                <th>Perfil</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${lista.map(item => `
+      const tabela = `
+        <div class="desktop-only">
+          <div class="table-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td><strong>${h(item.nome)}</strong></td>
-                  <td>${h(item.usuario)}</td>
-                  <td>
-                    <span class="badge ${item.perfil === "admin" ? "info" : "success"}">
-                      ${item.perfil === "admin" ? "Supervisor" : "Funcionário"}
-                    </span>
-                  </td>
-                  <td>
-                    <button class="btn small danger" onclick="excluirUsuario(${item.id})">Excluir</button>
-                  </td>
+                  <th>Nome</th>
+                  <th>Usuário</th>
+                  <th>Perfil</th>
+                  <th>Ação</th>
                 </tr>
-              `).join("")}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${lista.map(item => `
+                  <tr>
+                    <td><strong>${h(item.nome)}</strong></td>
+                    <td>${h(item.usuario)}</td>
+                    <td><span class="badge ${item.perfil === "admin" ? "info" : "success"}">${item.perfil === "admin" ? "Supervisor" : "Funcionário"}</span></td>
+                    <td><button class="btn small danger" onclick="excluirUsuario(${item.id})">Excluir</button></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
+
+      const cards = `
+        <div class="mobile-only">
+          <div class="mobile-list">
+            ${lista.map(item => `
+              <article class="mobile-record">
+                <div class="mobile-record-title">
+                  <div>
+                    <strong>${h(item.nome)}</strong>
+                    <span>${h(item.usuario)}</span>
+                  </div>
+                  <span class="badge ${item.perfil === "admin" ? "info" : "success"}">${item.perfil === "admin" ? "Supervisor" : "Funcionário"}</span>
+                </div>
+                <div class="mobile-actions"><button class="btn small danger" onclick="excluirUsuario(${item.id})">Excluir usuário</button></div>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      return tabela + cards;
     }
 
     async function criarUsuario() {
@@ -1908,43 +2460,68 @@
         return `<div class="empty">Nenhuma resposta registrada até o momento.</div>`;
       }
 
-      return `
-        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Data/Hora</th>
-                <th>Funcionário</th>
-                <th>Atividade</th>
-                <th>Status</th>
-                <th>Resultado</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${lista.map(item => `
+      const tabela = `
+        <div class="desktop-only">
+          <div class="table-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td>${h(item.dataHora)}</td>
-                  <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
-                  <td>${h(item.titulo)}</td>
-                  <td>
-                    <span class="badge ${item.status === "Completo" ? "success" : "danger"}">
-                      ${h(item.status)}
-                    </span>
-                  </td>
-                  <td>
-                    <strong>${item.percentual || 0}%</strong>
-                    <div class="progress">
-                      <div class="progress-bar" style="width:${item.percentual || 0}%"></div>
-                    </div>
-                    <span style="color:var(--muted);font-size:12px;">${item.itensMarcados}/${item.totalItens} itens</span>
-                  </td>
+                  <th>Data/Hora</th>
+                  <th>Funcionário</th>
+                  <th>Atividade</th>
+                  <th>Status</th>
+                  <th>Resultado</th>
                 </tr>
-              `).join("")}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${lista.map(item => `
+                  <tr>
+                    <td>${h(item.dataHora)}</td>
+                    <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
+                    <td>${h(item.titulo)}</td>
+                    <td><span class="badge ${item.status === "Completo" ? "success" : "danger"}">${h(item.status)}</span></td>
+                    <td>
+                      <strong>${item.percentual || 0}%</strong>
+                      <div class="progress"><div class="progress-bar" style="width:${item.percentual || 0}%"></div></div>
+                      <span style="color:var(--muted);font-size:12px;">${item.itensMarcados}/${item.totalItens} itens</span>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
+
+      const cards = `
+        <div class="mobile-only">
+          <div class="mobile-list">
+            ${lista.map(item => `
+              <article class="mobile-record">
+                <div class="mobile-record-title">
+                  <div>
+                    <strong>${h(item.funcionario)}</strong>
+                    <span>${h(item.usuario)} • ${h(item.dataHora)}</span>
+                  </div>
+                  <span class="badge ${item.status === "Completo" ? "success" : "danger"}">${h(item.status)}</span>
+                </div>
+
+                <div class="mobile-row"><div class="mobile-label">Atividade</div><div class="mobile-value">${h(item.titulo)}</div></div>
+                <div class="mobile-row">
+                  <div class="mobile-label">Resultado</div>
+                  <div class="mobile-value">
+                    ${item.percentual || 0}%
+                    <div class="progress"><div class="progress-bar" style="width:${item.percentual || 0}%"></div></div>
+                    <span style="color:var(--muted);font-size:12px;">${item.itensMarcados}/${item.totalItens} itens</span>
+                  </div>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      return tabela + cards;
     }
 
     function navFuncionario() {
