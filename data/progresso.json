@@ -1,0 +1,136 @@
+[
+  {
+    "id": 1778195266918,
+    "funcionarioId": 1778187168254,
+    "funcionario": "Erison",
+    "usuario": "Eri_neto",
+    "checklistId": 1,
+    "titulo": "Checklist de Entrada do Funcionário",
+    "totalItens": 5,
+    "itensConcluidos": 1,
+    "percentual": 20,
+    "status": "Em andamento",
+    "itens": [
+      {
+        "itemIndex": 0,
+        "item": "Está usando uniforme completo?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 20:12:33",
+        "dataAlteracao": "07/05/2026, 20:12:33"
+      }
+    ],
+    "dataCriacao": "07/05/2026, 20:07:46",
+    "dataAtualizacao": "07/05/2026, 20:12:33"
+  },
+  {
+    "id": 1778195273651,
+    "funcionarioId": 1778187168254,
+    "funcionario": "Erison",
+    "usuario": "Eri_neto",
+    "checklistId": 2,
+    "titulo": "Checklist de Saída do Funcionário",
+    "totalItens": 5,
+    "itensConcluidos": 1,
+    "percentual": 20,
+    "status": "Em andamento",
+    "itens": [
+      {
+        "itemIndex": 0,
+        "item": "Finalizou as atividades do turno?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 20:12:44",
+        "dataAlteracao": "07/05/2026, 20:12:44"
+      },
+      {
+        "itemIndex": 1,
+        "item": "Organizou o posto de trabalho?",
+        "marcado": false,
+        "dataConclusao": null,
+        "dataAlteracao": "07/05/2026, 20:12:44"
+      }
+    ],
+    "dataCriacao": "07/05/2026, 20:07:53",
+    "dataAtualizacao": "07/05/2026, 20:12:44"
+  },
+  {
+    "id": 1778208094388,
+    "funcionarioId": 2,
+    "funcionario": "Funcionário Teste",
+    "usuario": "funcionario",
+    "checklistId": 1,
+    "titulo": "Checklist de Entrada do Funcionário",
+    "totalItens": 5,
+    "itensConcluidos": 5,
+    "percentual": 100,
+    "status": "Completo",
+    "itens": [
+      {
+        "itemIndex": 1,
+        "item": "Está usando crachá?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 23:41:41",
+        "dataAlteracao": "07/05/2026, 23:41:41"
+      },
+      {
+        "itemIndex": 0,
+        "item": "Está usando uniforme completo?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 23:41:34",
+        "dataAlteracao": "07/05/2026, 23:41:34"
+      },
+      {
+        "itemIndex": 2,
+        "item": "Está usando EPI obrigatório?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 23:41:41",
+        "dataAlteracao": "07/05/2026, 23:41:41"
+      },
+      {
+        "itemIndex": 3,
+        "item": "Recebeu orientação do líder?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 23:41:42",
+        "dataAlteracao": "07/05/2026, 23:41:42"
+      },
+      {
+        "itemIndex": 4,
+        "item": "Está apto para iniciar a atividade?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 23:41:43",
+        "dataAlteracao": "07/05/2026, 23:41:43"
+      }
+    ],
+    "dataCriacao": "07/05/2026, 23:41:34",
+    "dataAtualizacao": "07/05/2026, 23:41:43"
+  },
+  {
+    "id": 1778208106187,
+    "funcionarioId": 2,
+    "funcionario": "Funcionário Teste",
+    "usuario": "funcionario",
+    "checklistId": 2,
+    "titulo": "Checklist de Saída do Funcionário",
+    "totalItens": 5,
+    "itensConcluidos": 2,
+    "percentual": 40,
+    "status": "Em andamento",
+    "itens": [
+      {
+        "itemIndex": 0,
+        "item": "Finalizou as atividades do turno?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 23:41:46",
+        "dataAlteracao": "07/05/2026, 23:41:46"
+      },
+      {
+        "itemIndex": 1,
+        "item": "Organizou o posto de trabalho?",
+        "marcado": true,
+        "dataConclusao": "07/05/2026, 23:41:46",
+        "dataAlteracao": "07/05/2026, 23:41:46"
+      }
+    ],
+    "dataCriacao": "07/05/2026, 23:41:46",
+    "dataAtualizacao": "07/05/2026, 23:41:46"
+  }
+]

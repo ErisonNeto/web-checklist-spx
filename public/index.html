@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Web Checklist | SPX</title>
+
+  <style>
+    :root {
+      --primary: #ee4d2d;
+      --primary-dark: #d84324;
+      --secondary: #111827;
+      --sidebar: #111827;
+      --bg: #f3f5f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --info: #0284c7;
+      --shadow: 0 8px 22px rgba(15, 23, 42, 0.075);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+    }
+
+    html {
+      width: 100%;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      width: 100%;
+      overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    .nav-btn,
+    .status-pill {
+      transition:
+        background-color .18s ease,
+        color .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease,
+        transform .18s ease,
+        opacity .18s ease;
+    }
+
+    .sidebar,
+    .content {
+      transition:
+        margin-left .2s ease,
+        width .2s ease,
+        transform .2s ease;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    .login-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+      background: linear-gradient(135deg, #f7f8fb, #eef1f6);
+    }
+
+    .login-brand {
+      padding: clamp(32px, 5vw, 70px);
+      background:
+        radial-gradient(circle at top left, rgba(238, 77, 45, .25), transparent 35%),
+        linear-gradient(135deg, #1f2937, #111827);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .login-brand .tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 24px;
+    }
+
+    .login-brand h1 {
+      margin: 0;
+      font-size: clamp(34px, 4vw, 50px);
+      line-height: 1.05;
+      letter-spacing: -1px;
+    }
+
+    .login-brand p {
+      color: rgba(255, 255, 255, .78);
+      font-size: 18px;
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    .login-card-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      min-width: 0;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      border-radius: 26px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, .8);
+    }
+
+    .login-card h2 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      color: var(--secondary);
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      max-width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      background: white;
+      color: var(--text);
+      transition: .2s;
+      min-width: 0;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(238, 77, 45, .12);
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .field {
+      margin-bottom: 16px;
+      min-width: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+      font-weight: 900;
+      transition: .2s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      opacity: .75;
+    }
+
+    .btn.secondary {
+      background: #111827;
+    }
+
+    .btn.ghost {
+      background: #fff;
+      color: var(--secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn.danger {
+      background: var(--danger);
+    }
+
+    .btn.small {
+      padding: 8px 11px;
+      font-size: 13px;
+      border-radius: 10px;
+    }
+
+    .btn.full {
+      width: 100%;
+    }
+
+    .hint {
+      margin-top: 22px;
+      padding: 16px;
+      background: #f9fafb;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar {
+      width: 86px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .app-shell.sidebar-collapsed .content {
+      margin-left: 86px;
+    }
+
+    .app-shell.sidebar-collapsed .logo-text,
+    .app-shell.sidebar-collapsed .user-box,
+    .app-shell.sidebar-collapsed .sidebar-label {
+      display: none;
+    }
+
+    .app-shell.sidebar-collapsed .logo {
+      justify-content: center;
+    }
+
+    .app-shell.sidebar-collapsed .nav-btn,
+    .app-shell.sidebar-collapsed .sidebar-toggle,
+    .app-shell.sidebar-collapsed .sidebar-footer .btn {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .sidebar {
+      background: var(--sidebar);
+      color: white;
+      padding: 24px;
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 280px;
+      height: 100vh;
+      min-width: 0;
+      z-index: 30;
+      overflow-y: auto;
+      transition: width .22s ease, transform .22s ease;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 30px;
+      min-width: 0;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 14px;
+      background: var(--primary);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .logo-text {
+      min-width: 0;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .logo-text span {
+      color: rgba(255, 255, 255, .65);
+      font-size: 13px;
+    }
+
+    .user-box {
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .08);
+      margin-bottom: 24px;
+      min-width: 0;
+    }
+
+    .user-box strong {
+      display: block;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .user-box span {
+      color: rgba(255, 255, 255, .65);
+      font-size: 13px;
+    }
+
+    .nav-area {
+      display: block;
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: rgba(255, 255, 255, .78);
+      padding: 12px 14px;
+      border-radius: 12px;
+      text-align: left;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(238, 77, 45, .18);
+      color: white;
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+    }
+
+    .sidebar-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, .08);
+      color: white;
+      padding: 11px 14px;
+      border-radius: 12px;
+      margin: -10px 0 18px;
+      font-weight: 900;
+    }
+
+    .sidebar-toggle:hover {
+      background: rgba(255, 255, 255, .14);
+    }
+
+    .nav-icon {
+      width: 22px;
+      min-width: 22px;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, .45);
+      z-index: 25;
+    }
+
+    .content {
+      padding: clamp(16px, 2vw, 30px);
+      overflow: auto;
+      min-width: 0;
+      width: auto;
+      margin-left: 280px;
+      height: 100vh;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+      min-width: 0;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 36px);
+      letter-spacing: -0.5px;
+      color: #111827;
+      line-height: 1.1;
+    }
+
+    .topbar p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: clamp(14px, 1.5vw, 18px);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, .12);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .grid-2 {
+      grid-template-columns: minmax(360px, 430px) minmax(0, 1fr);
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .management-layout {
+      align-items: start;
+    }
+
+    .management-layout > .card {
+      min-width: 0;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, .75);
+      padding: clamp(18px, 1.8vw, 26px);
+      margin-bottom: 18px;
+      min-width: 0;
+      width: 100%;
+      animation: fadeUp .18s ease both;
+    }
+
+    .card:hover {
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.09);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      min-width: 0;
+    }
+
+    .card h2,
+    .card h3 {
+      margin: 0;
+      color: var(--secondary);
+      line-height: 1.15;
+    }
+
+    .card .desc {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, .75);
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+      animation: fadeUp .28s ease both;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10);
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      top: -30px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(238, 77, 45, .09);
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-top: 10px;
+      font-size: clamp(28px, 3vw, 36px);
+      color: var(--secondary);
+    }
+
+    .stat-card small {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      min-width: 0;
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #4b5563;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      text-align: left;
+      padding: 13px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: #374151;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: #fcfcfd;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .badge.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge.danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge.info {
+      background: #e0f2fe;
+      color: #075985;
+    }
+
+    .progress {
+      height: 9px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      min-width: 120px;
+      margin: 5px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .stacked-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .empty {
+      padding: 28px;
+      text-align: center;
+      background: #f9fafb;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .checklist-card {
+      border-left: 5px solid var(--primary);
+    }
+
+    .check-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      font-weight: 650;
+      color: #374151;
+      min-width: 0;
+    }
+
+    .check-item:last-child {
+      border-bottom: none;
+    }
+
+    .check-item input {
+      width: 18px;
+      min-width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+
+    .check-item span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .message {
+      margin-top: 12px;
+      font-weight: 900;
+    }
+
+    .success-text {
+      color: var(--success);
+    }
+
+    .danger-text {
+      color: var(--danger);
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: #111827;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      z-index: 50;
+      font-weight: 900;
+      display: none;
+      max-width: min(360px, calc(100vw - 32px));
+    }
+
+    .toast.show {
+      display: block;
+      animation: slide .25s ease;
+    }
+
+    .logout-btn {
+      background: var(--primary);
+      color: white;
+      border: 1px solid rgba(255,255,255,.12);
+      font-weight: 900;
+      box-shadow: 0 10px 24px rgba(238, 77, 45, .22);
+    }
+
+    .logout-btn:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 14px 30px rgba(238, 77, 45, .30);
+    }
+
+    .app-shell.sidebar-collapsed .logout-btn {
+      padding: 12px;
+      min-height: 46px;
+    }
+
+    .app-shell.sidebar-collapsed .logout-btn::before {
+      content: "↩";
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .app-shell.sidebar-collapsed .logout-btn .sidebar-label {
+      display: none;
+    }
+
+    @keyframes slide {
+      from {
+        transform: translateY(12px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        transform: translateY(8px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .skeleton {
+      height: 18px;
+      width: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #eef0f4, #f7f8fa, #eef0f4);
+      background-size: 200% 100%;
+      animation: loading 1.2s infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes loading {
+      to {
+        background-position: -200% 0;
+      }
+    }
+
+    .mobile-table-hint {
+      display: none;
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1200px) {
+      .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-2,
+      .management-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .login-page {
+        grid-template-columns: 1fr;
+      }
+
+      .login-brand {
+        padding: 34px 24px;
+        min-height: auto;
+      }
+
+      .login-card-wrap {
+        padding: 24px;
+      }
+
+      .app-shell {
+        min-height: 100vh;
+      }
+
+      .app-shell.sidebar-collapsed .sidebar {
+        width: min(86vw, 320px);
+        padding: 18px;
+      }
+
+      .app-shell.sidebar-collapsed .content {
+        margin-left: 0;
+      }
+
+      .app-shell.sidebar-collapsed .logo-text,
+      .app-shell.sidebar-collapsed .user-box {
+        display: block;
+      }
+
+      .app-shell.sidebar-collapsed .sidebar-label {
+        display: inline;
+      }
+
+      .app-shell.sidebar-collapsed .logo {
+        justify-content: flex-start;
+      }
+
+      .sidebar {
+        position: fixed;
+        width: min(86vw, 320px);
+        height: 100vh;
+        padding: 18px;
+        transform: translateX(-105%);
+      }
+
+      .app-shell.mobile-open .sidebar {
+        transform: translateX(0);
+      }
+
+      .app-shell.mobile-open .sidebar-overlay {
+        display: block;
+      }
+
+      .mobile-menu-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo {
+        margin-bottom: 16px;
+      }
+
+      .user-box {
+        margin-bottom: 16px;
+      }
+
+      .nav-area {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .nav-btn {
+        margin-bottom: 0;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .sidebar-footer {
+        position: static;
+        margin-top: 14px;
+      }
+
+      .content {
+        padding: 18px;
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .grid-4,
+      .grid-2,
+      .management-layout,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid .full {
+        grid-column: auto;
+      }
+
+      .card-header {
+        flex-direction: column;
+      }
+
+      .card-header .btn {
+        width: 100%;
+      }
+
+      table {
+        min-width: 680px;
+      }
+
+      .mobile-table-hint {
+        display: block;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .login-brand h1 {
+        font-size: 30px;
+      }
+
+      .login-brand p {
+        font-size: 15px;
+      }
+
+      .login-card-wrap {
+        padding: 16px;
+      }
+
+      .login-card {
+        padding: 22px;
+        border-radius: 20px;
+      }
+
+      .sidebar {
+        padding: 16px;
+      }
+
+      .nav-area {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: 14px;
+      }
+
+      .topbar h1 {
+        font-size: 24px;
+      }
+
+      .status-pill {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card strong {
+        font-size: 28px;
+      }
+
+      .btn {
+        width: 100%;
+        white-space: normal;
+      }
+
+      .btn.small {
+        width: auto;
+      }
+
+      input,
+      select,
+      textarea {
+        font-size: 16px;
+      }
+
+      table {
+        min-width: 720px;
+      }
+
+      .toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        max-width: unset;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const API_URL = window.location.protocol === "file:" ? "http://localhost:3000" : "";
+
+    let usuarioAtual = null;
+    let telaAtual = "dashboard";
+    let intervaloPainel = null;
+    let cacheUsuarios = [];
+    let cacheAtividades = [];
+    let cacheRespostas = [];
+    let cacheDashboard = null;
+    let cacheConclusoes = [];
+    let usuarioRolando = false;
+    let timerScroll = null;
+
+    function h(valor) {
+      return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function toast(mensagem) {
+      const el = document.getElementById("toast");
+      el.textContent = mensagem;
+      el.classList.add("show");
+
+      setTimeout(() => {
+        el.classList.remove("show");
+      }, 2800);
+    }
+
+    function getUsuario() {
+      const dados = localStorage.getItem("usuarioLogado");
+      return dados ? JSON.parse(dados) : null;
+    }
+
+    function setUsuario(usuario) {
+      localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+    }
+
+    function limparIntervalo() {
+      if (intervaloPainel) {
+        clearInterval(intervaloPainel);
+        intervaloPainel = null;
+      }
+    }
+
+    function configurarScrollSuave() {
+      const content = document.querySelector(".content");
+      if (!content) return;
+
+      content.addEventListener("scroll", () => {
+        usuarioRolando = true;
+        clearTimeout(timerScroll);
+
+        timerScroll = setTimeout(() => {
+          usuarioRolando = false;
+        }, 900);
+      }, { passive: true });
+    }
+
+    function sidebarColapsada() {
+      return localStorage.getItem("sidebarCollapsed") === "true";
+    }
+
+    function toggleSidebar() {
+      const shell = document.querySelector(".app-shell");
+      if (!shell) return;
+
+      if (window.innerWidth <= 900) {
+        shell.classList.toggle("mobile-open");
+        return;
+      }
+
+      const colapsada = !shell.classList.contains("sidebar-collapsed");
+      shell.classList.toggle("sidebar-collapsed", colapsada);
+      localStorage.setItem("sidebarCollapsed", colapsada ? "true" : "false");
+    }
+
+    function abrirMenuMobile() {
+      document.querySelector(".app-shell")?.classList.add("mobile-open");
+    }
+
+    function fecharMenuMobile() {
+      document.querySelector(".app-shell")?.classList.remove("mobile-open");
+    }
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 900) {
+        fecharMenuMobile();
+      }
+    });
+
+    function sair() {
+      localStorage.removeItem("usuarioLogado");
+      limparIntervalo();
+      usuarioAtual = null;
+      telaAtual = "dashboard";
+      iniciar();
+    }
+
+    function iniciar() {
+      usuarioAtual = getUsuario();
+
+      if (!usuarioAtual) {
+        renderLogin();
+        return;
+      }
+
+      if (usuarioAtual.perfil === "admin") {
+        renderShellAdmin();
+      } else {
+        renderShellFuncionario();
+      }
+    }
+
+    function renderLogin() {
+      limparIntervalo();
+
+      document.getElementById("app").innerHTML = `
+        <section class="login-page">
+          <div class="login-brand">
+            <span class="tag">SPX • Web Checklist</span>
+            <h1>Gestão operacional com checklist digital.</h1>
+            <p>
+              Controle atividades, acompanhe desempenho dos funcionários e centralize
+              respostas operacionais em um painel simples, responsivo e profissional.
+            </p>
+          </div>
+
+          <div class="login-card-wrap">
+            <div class="login-card">
+              <h2>Acesso ao sistema</h2>
+              <p class="subtitle">Entre com seu usuário corporativo para continuar.</p>
+
+              <div class="field">
+                <label>Usuário</label>
+                <input id="loginUsuario" type="text" placeholder="Digite seu usuário" autocomplete="username" />
+              </div>
+
+              <div class="field">
+                <label>Senha</label>
+                <input id="loginSenha" type="password" placeholder="Digite sua senha" autocomplete="current-password" />
+              </div>
+
+              <button class="btn full" onclick="fazerLogin()">Entrar</button>
+              <p id="msgLogin" class="message"></p>
+
+              <div class="hint">
+                <strong>Acesso teste supervisor:</strong> admin / 123456<br>
+                <strong>Acesso teste funcionário:</strong> funcionario / 123456
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+
+      configurarScrollSuave();
+    }
+
+    async function fazerLogin() {
+      const usuario = document.getElementById("loginUsuario").value.trim();
+      const senha = document.getElementById("loginSenha").value.trim();
+      const msg = document.getElementById("msgLogin");
+
+      if (!usuario || !senha) {
+        msg.className = "message danger-text";
+        msg.textContent = "Informe usuário e senha.";
+        return;
+      }
+
+      msg.className = "message";
+      msg.textContent = "Validando acesso...";
+
+      try {
+        const resposta = await fetch(`${API_URL}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario, senha })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+          msg.className = "message danger-text";
+          msg.textContent = resultado.mensagem || "Usuário ou senha inválidos.";
+          return;
+        }
+
+        setUsuario(resultado.usuario);
+        toast("Login realizado com sucesso.");
+        iniciar();
+
+      } catch (erro) {
+        msg.className = "message danger-text";
+        msg.textContent = "Erro ao conectar com o backend.";
+      }
+    }
+
+    function shellBase(conteudoSidebar, conteudoPrincipal) {
+      document.getElementById("app").innerHTML = `
+        <section class="app-shell ${sidebarColapsada() ? "sidebar-collapsed" : ""}">
+          <div class="sidebar-overlay" onclick="fecharMenuMobile()"></div>
+          <aside class="sidebar">
+            <div class="logo">
+              <div class="logo-icon">S</div>
+              <div class="logo-text">
+                <strong>SPX Checklist</strong>
+                <span>Controle operacional</span>
+              </div>
+            </div>
+
+            <button class="sidebar-toggle" onclick="toggleSidebar()" title="Abrir ou recolher menu">
+              <span class="nav-icon">☰</span>
+              <span class="sidebar-label">Menu</span>
+            </button>
+
+            <div class="user-box">
+              <strong>${h(usuarioAtual.nome)}</strong>
+              <span>${usuarioAtual.perfil === "admin" ? "Supervisor / ADM" : "Funcionário"}</span>
+            </div>
+
+            <nav class="nav-area">
+              ${conteudoSidebar}
+            </nav>
+
+            <div class="sidebar-footer">
+              <button class="btn full logout-btn" onclick="sair()">
+                <span class="sidebar-label">Sair do sistema</span>
+              </button>
+            </div>
+          </aside>
+
+          <main class="content">
+            <button class="mobile-menu-btn" onclick="abrirMenuMobile()">☰ Menu</button>
+            ${conteudoPrincipal}
+          </main>
+        </section>
+      `;
+    }
+
+    function navAdmin() {
+      const itens = [
+        ["dashboard", "Dashboard", "📊"],
+        ["atividades", "Atividades", "🧾"],
+        ["usuarios", "Funcionários", "👥"],
+        ["respostas", "Histórico", "🕒"]
+      ];
+
+      return itens.map(([id, nome, icone]) => `
+        <button class="nav-btn ${telaAtual === id ? "active" : ""}" onclick="mudarTelaAdmin('${id}')">
+          <span class="nav-icon">${icone}</span>
+          <span class="sidebar-label">${nome}</span>
+        </button>
+      `).join("");
+    }
+
+    function mudarTelaAdmin(tela) {
+      telaAtual = tela;
+      fecharMenuMobile();
+      renderShellAdmin(false);
+    }
+
+    function renderShellAdmin(recarregar = true) {
+      shellBase(navAdmin(), `
+        <div class="topbar">
+          <div>
+            <h1>${tituloTelaAdmin()}</h1>
+            <p>Dados carregados automaticamente ao abrir e atualizados em tempo real.</p>
+          </div>
+
+          <span class="status-pill">
+            <span class="dot"></span>
+            Painel online
+          </span>
+        </div>
+
+        <div id="adminContent">
+          ${skeleton()}
+        </div>
+      `);
+
+      renderConteudoAdmin();
+
+      if (recarregar) {
+        carregarTudoAdmin(true);
+
+        limparIntervalo();
+        intervaloPainel = setInterval(() => {
+          carregarTudoAdmin(false);
+        }, 12000);
+      }
+    }
+
+    function tituloTelaAdmin() {
+      const titulos = {
+        dashboard: "Dashboard do Supervisor",
+        atividades: "Gestão de Atividades",
+        usuarios: "Gestão de Funcionários",
+        respostas: "Histórico de Respostas"
+      };
+
+      return titulos[telaAtual] || "Dashboard";
+    }
+
+    function skeleton() {
+      return `
+        <div class="card">
+          <div class="skeleton"></div>
+          <div class="skeleton" style="width:80%"></div>
+          <div class="skeleton" style="width:55%"></div>
+        </div>
+      `;
+    }
+
+    async function carregarTudoAdmin(mostrarToast = false) {
+      if (!mostrarToast && usuarioRolando) return;
+
+      try {
+        const [usuariosResp, atividadesResp, respostasResp, dashboardResp, conclusoesResp] = await Promise.all([
+          fetch(`${API_URL}/api/usuarios`),
+          fetch(`${API_URL}/api/checklists`),
+          fetch(`${API_URL}/api/respostas`),
+          fetch(`${API_URL}/api/respostas/dashboard`),
+          fetch(`${API_URL}/api/respostas/conclusoes`)
+        ]);
+
+        cacheUsuarios = await usuariosResp.json();
+        cacheAtividades = await atividadesResp.json();
+        cacheRespostas = await respostasResp.json();
+        cacheDashboard = await dashboardResp.json();
+        cacheConclusoes = await conclusoesResp.json();
+
+        renderConteudoAdmin();
+
+        if (mostrarToast) {
+          toast("Dashboard carregado.");
+        }
+
+      } catch (erro) {
+        document.getElementById("adminContent").innerHTML = `
+          <div class="empty">Erro ao carregar dados. Verifique se o backend está rodando.</div>
+        `;
+      }
+    }
+
+    function renderConteudoAdmin() {
+      if (!document.getElementById("adminContent")) return;
+
+      if (telaAtual === "dashboard") renderDashboard();
+      if (telaAtual === "atividades") renderAtividadesAdmin();
+      if (telaAtual === "usuarios") renderUsuariosAdmin();
+      if (telaAtual === "respostas") renderHistoricoAdmin();
+    }
+
+    function renderDashboard() {
+      const dash = cacheDashboard || {
+        total: 0,
+        completos: 0,
+        incompletos: 0,
+        mediaGeral: 0,
+        porFuncionario: []
+      };
+
+      document.getElementById("adminContent").innerHTML = `
+        <section class="grid grid-4">
+          <div class="stat-card">
+            <span>Total de respostas</span>
+            <strong>${dash.total}</strong>
+            <small>Registros salvos</small>
+          </div>
+
+          <div class="stat-card">
+            <span>Completos</span>
+            <strong>${dash.completos}</strong>
+            <small>Atividades 100%</small>
+          </div>
+
+          <div class="stat-card">
+            <span>Incompletos</span>
+            <strong>${dash.incompletos}</strong>
+            <small>Com pendência</small>
+          </div>
+
+          <div class="stat-card">
+            <span>Média geral</span>
+            <strong>${dash.mediaGeral}%</strong>
+            <small>Performance operacional</small>
+          </div>
+        </section>
+
+        <div class="card" style="margin-top:18px;">
+          <div class="card-header">
+            <div>
+              <h2>Performance por funcionário</h2>
+              <p class="desc">Acompanhamento em tempo real com base nas respostas registradas.</p>
+            </div>
+
+            <button class="btn small" onclick="carregarTudoAdmin(true)">Atualizar</button>
+          </div>
+
+          ${renderTabelaPerformance(dash.porFuncionario || [])}
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Conclusão atual por atividade</h2>
+              <p class="desc">Mostra o que cada funcionário já conseguiu concluir. Itens concluídos ficam acumulados.</p>
+            </div>
+          </div>
+
+          ${renderTabelaConclusoes(cacheConclusoes)}
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Últimas respostas</h2>
+              <p class="desc">Últimos registros enviados pelos funcionários.</p>
+            </div>
+          </div>
+
+          ${renderTabelaRespostas(cacheRespostas.slice().reverse().slice(0, 8))}
+        </div>
+      `;
+    }
+
+    function renderTabelaPerformance(lista) {
+      if (!lista.length) {
+        return `<div class="empty">Nenhum funcionário com performance registrada ainda.</div>`;
+      }
+
+      return `
+        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Funcionário</th>
+                <th>Total</th>
+                <th>Completos</th>
+                <th>Incompletos</th>
+                <th>Média</th>
+                <th>Última atividade</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lista.map(item => `
+                <tr>
+                  <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
+                  <td>${item.total}</td>
+                  <td>${item.completos}</td>
+                  <td>${item.incompletos}</td>
+                  <td>
+                    <strong>${item.media}%</strong>
+                    <div class="progress">
+                      <div class="progress-bar" style="width:${item.media}%"></div>
+                    </div>
+                  </td>
+                  <td>${h(item.ultimaAtividade)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderTabelaConclusoes(lista) {
+      if (!lista.length) {
+        return `<div class="empty">Nenhuma conclusão registrada até o momento.</div>`;
+      }
+
+      return `
+        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Funcionário</th>
+                <th>Atividade</th>
+                <th>Status</th>
+                <th>Conclusão</th>
+                <th>Última atualização</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lista.slice().reverse().map(item => `
+                <tr>
+                  <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
+                  <td>${h(item.titulo)}</td>
+                  <td>
+                    <span class="badge ${item.status === "Completo" ? "success" : "danger"}">
+                      ${h(item.status)}
+                    </span>
+                  </td>
+                  <td>
+                    <strong>${item.percentual || 0}%</strong>
+                    <div class="progress">
+                      <div class="progress-bar" style="width:${item.percentual || 0}%"></div>
+                    </div>
+                    <span style="color:var(--muted);font-size:12px;">${item.itensConcluidos}/${item.totalItens} itens concluídos</span>
+                  </td>
+                  <td>${h(item.dataAtualizacao || "-")}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderAtividadesAdmin() {
+      document.getElementById("adminContent").innerHTML = `
+        <div class="grid grid-2 management-layout">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Criar nova atividade</h2>
+                <p class="desc">Crie atividades gerais ou direcionadas para um funcionário específico.</p>
+              </div>
+            </div>
+
+            <div class="stacked-form">
+              <div class="field">
+                <label>Título</label>
+                <input id="atividadeTitulo" placeholder="Ex: Conferência de EPI" />
+              </div>
+
+              <div class="field">
+                <label>Setor</label>
+                <input id="atividadeSetor" placeholder="Ex: Operação" />
+              </div>
+
+              <div class="field">
+                <label>Atribuir para</label>
+                <select id="atividadeFuncionario">
+                  <option value="">Todos os funcionários</option>
+                  ${cacheUsuarios.filter(u => u.perfil === "funcionario").map(u => `
+                    <option value="${u.id}">${h(u.nome)}</option>
+                  `).join("")}
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Descrição</label>
+                <input id="atividadeDescricao" placeholder="Breve descrição da atividade" />
+              </div>
+
+              <div class="field">
+                <label>Itens da atividade</label>
+                <textarea id="atividadeItens" placeholder="Digite um item por linha"></textarea>
+              </div>
+            </div>
+
+            <button class="btn full" onclick="criarAtividade()">Criar atividade</button>
+            <p id="msgAtividade" class="message"></p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Atividades cadastradas</h2>
+                <p class="desc">Gerencie as atividades disponíveis para a operação.</p>
+              </div>
+            </div>
+
+            ${renderTabelaAtividades(cacheAtividades)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTabelaAtividades(lista) {
+      if (!lista.length) {
+        return `<div class="empty">Nenhuma atividade cadastrada.</div>`;
+      }
+
+      return `
+        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Atividade</th>
+                <th>Setor</th>
+                <th>Atribuição</th>
+                <th>Itens</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lista.map(item => `
+                <tr>
+                  <td><strong>${h(item.titulo)}</strong><br><span style="color:var(--muted);">${h(item.descricao || "Sem descrição")}</span></td>
+                  <td>${h(item.setor)}</td>
+                  <td><span class="badge info">${h(item.funcionarioNome || "Todos")}</span></td>
+                  <td>${item.itens ? item.itens.length : 0}</td>
+                  <td>
+                    <button class="btn small danger" onclick="excluirAtividade(${item.id})">Excluir</button>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function criarAtividade() {
+      const titulo = document.getElementById("atividadeTitulo").value.trim();
+      const setor = document.getElementById("atividadeSetor").value.trim();
+      const descricao = document.getElementById("atividadeDescricao").value.trim();
+      const select = document.getElementById("atividadeFuncionario");
+      const funcionarioId = select.value;
+      const funcionarioNome = funcionarioId ? select.options[select.selectedIndex].text : "Todos";
+
+      const itens = document.getElementById("atividadeItens").value
+        .split("\n")
+        .map(i => i.trim())
+        .filter(Boolean);
+
+      const msg = document.getElementById("msgAtividade");
+
+      if (!titulo || !setor || !itens.length) {
+        msg.className = "message danger-text";
+        msg.textContent = "Preencha título, setor e pelo menos um item.";
+        return;
+      }
+
+      const resposta = await fetch(`${API_URL}/api/checklists`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          titulo,
+          setor,
+          descricao,
+          funcionarioId: funcionarioId || null,
+          funcionarioNome,
+          itens
+        })
+      });
+
+      if (!resposta.ok) {
+        msg.className = "message danger-text";
+        msg.textContent = "Erro ao criar atividade.";
+        return;
+      }
+
+      msg.className = "message success-text";
+      msg.textContent = "Atividade criada com sucesso.";
+
+      toast("Atividade criada.");
+      await carregarTudoAdmin();
+      renderAtividadesAdmin();
+    }
+
+    async function excluirAtividade(id) {
+      if (!confirm("Deseja realmente excluir esta atividade?")) return;
+
+      await fetch(`${API_URL}/api/checklists/${id}`, { method: "DELETE" });
+      toast("Atividade excluída.");
+      await carregarTudoAdmin();
+    }
+
+    function renderUsuariosAdmin() {
+      document.getElementById("adminContent").innerHTML = `
+        <div class="grid grid-2 management-layout">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Criar perfil</h2>
+                <p class="desc">Cadastre funcionários ou supervisores do sistema.</p>
+              </div>
+            </div>
+
+            <div class="stacked-form">
+              <div class="field">
+                <label>Nome completo</label>
+                <input id="novoNome" placeholder="Nome do funcionário" />
+              </div>
+
+              <div class="field">
+                <label>Usuário</label>
+                <input id="novoUsuario" placeholder="Ex: joao.silva" />
+              </div>
+
+              <div class="field">
+                <label>Senha inicial</label>
+                <input id="novaSenha" placeholder="Senha" />
+              </div>
+
+              <div class="field">
+                <label>Perfil</label>
+                <select id="novoPerfil">
+                  <option value="funcionario">Funcionário</option>
+                  <option value="admin">Supervisor / ADM</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn full" onclick="criarUsuario()">Criar perfil</button>
+            <p id="msgUsuario" class="message"></p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Usuários cadastrados</h2>
+                <p class="desc">Controle os acessos ativos no sistema.</p>
+              </div>
+            </div>
+
+            ${renderTabelaUsuarios(cacheUsuarios)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTabelaUsuarios(lista) {
+      if (!lista.length) {
+        return `<div class="empty">Nenhum usuário cadastrado.</div>`;
+      }
+
+      return `
+        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Perfil</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lista.map(item => `
+                <tr>
+                  <td><strong>${h(item.nome)}</strong></td>
+                  <td>${h(item.usuario)}</td>
+                  <td>
+                    <span class="badge ${item.perfil === "admin" ? "info" : "success"}">
+                      ${item.perfil === "admin" ? "Supervisor" : "Funcionário"}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn small danger" onclick="excluirUsuario(${item.id})">Excluir</button>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function criarUsuario() {
+      const nome = document.getElementById("novoNome").value.trim();
+      const usuario = document.getElementById("novoUsuario").value.trim();
+      const senha = document.getElementById("novaSenha").value.trim();
+      const perfil = document.getElementById("novoPerfil").value;
+      const msg = document.getElementById("msgUsuario");
+
+      if (!nome || !usuario || !senha) {
+        msg.className = "message danger-text";
+        msg.textContent = "Preencha todos os campos.";
+        return;
+      }
+
+      const resposta = await fetch(`${API_URL}/api/usuarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, usuario, senha, perfil })
+      });
+
+      const resultado = await resposta.json();
+
+      if (!resposta.ok) {
+        msg.className = "message danger-text";
+        msg.textContent = resultado.mensagem || "Erro ao criar usuário.";
+        return;
+      }
+
+      msg.className = "message success-text";
+      msg.textContent = "Perfil criado com sucesso.";
+
+      toast("Perfil criado.");
+      await carregarTudoAdmin();
+      renderUsuariosAdmin();
+    }
+
+    async function excluirUsuario(id) {
+      if (!confirm("Deseja realmente excluir este usuário?")) return;
+
+      const resposta = await fetch(`${API_URL}/api/usuarios/${id}`, {
+        method: "DELETE"
+      });
+
+      const resultado = await resposta.json();
+
+      if (!resposta.ok) {
+        toast(resultado.mensagem || "Não foi possível excluir.");
+        return;
+      }
+
+      toast("Usuário excluído.");
+      await carregarTudoAdmin();
+    }
+
+    function renderHistoricoAdmin() {
+      document.getElementById("adminContent").innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Histórico de respostas</h2>
+              <p class="desc">Todas as respostas registradas no sistema.</p>
+            </div>
+
+            <button class="btn small" onclick="carregarTudoAdmin(true)">Atualizar</button>
+          </div>
+
+          ${renderTabelaRespostas(cacheRespostas.slice().reverse())}
+        </div>
+      `;
+    }
+
+    function renderTabelaRespostas(lista) {
+      if (!lista.length) {
+        return `<div class="empty">Nenhuma resposta registrada até o momento.</div>`;
+      }
+
+      return `
+        <p class="mobile-table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Data/Hora</th>
+                <th>Funcionário</th>
+                <th>Atividade</th>
+                <th>Status</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lista.map(item => `
+                <tr>
+                  <td>${h(item.dataHora)}</td>
+                  <td><strong>${h(item.funcionario)}</strong><br><span style="color:var(--muted);">${h(item.usuario)}</span></td>
+                  <td>${h(item.titulo)}</td>
+                  <td>
+                    <span class="badge ${item.status === "Completo" ? "success" : "danger"}">
+                      ${h(item.status)}
+                    </span>
+                  </td>
+                  <td>
+                    <strong>${item.percentual || 0}%</strong>
+                    <div class="progress">
+                      <div class="progress-bar" style="width:${item.percentual || 0}%"></div>
+                    </div>
+                    <span style="color:var(--muted);font-size:12px;">${item.itensMarcados}/${item.totalItens} itens</span>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function navFuncionario() {
+      return `
+        <button class="nav-btn active" onclick="fecharMenuMobile()">
+          <span class="nav-icon">✅</span>
+          <span class="sidebar-label">Minhas atividades</span>
+        </button>
+      `;
+    }
+
+    function renderShellFuncionario() {
+      limparIntervalo();
+
+      shellBase(navFuncionario(), `
+        <div class="topbar">
+          <div>
+            <h1>Minhas atividades</h1>
+            <p>Atividades gerais e atividades direcionadas ao seu perfil.</p>
+          </div>
+
+          <span class="status-pill">
+            <span class="dot"></span>
+            Acesso funcionário
+          </span>
+        </div>
+
+        <section id="areaFuncionario">
+          ${skeleton()}
+        </section>
+      `);
+
+      carregarAtividadesFuncionario();
+    }
+
+    async function carregarAtividadesFuncionario() {
+      const area = document.getElementById("areaFuncionario");
+
+      try {
+        const [atividadesResp, progressoResp] = await Promise.all([
+          fetch(`${API_URL}/api/checklists?funcionarioId=${usuarioAtual.id}`),
+          fetch(`${API_URL}/api/respostas/progresso/${usuarioAtual.id}`)
+        ]);
+
+        const atividades = await atividadesResp.json();
+        const progresso = await progressoResp.json();
+
+        if (!atividades.length) {
+          area.innerHTML = `
+            <div class="empty">
+              Nenhuma atividade disponível para você no momento.
+            </div>
+          `;
+          return;
+        }
+
+        area.innerHTML = atividades.map(atividade => {
+          const progressoAtividade = progresso.find(item => Number(item.checklistId) === Number(atividade.id));
+          const itensProgresso = progressoAtividade?.itens || [];
+          const totalItens = atividade.itens.length;
+
+          const itensConcluidos = atividade.itens.filter((item, index) => {
+            const progressoItem = itensProgresso.find(p => {
+              return Number(p.itemIndex) === index || p.item === item;
+            });
+
+            return progressoItem && progressoItem.marcado;
+          }).length;
+
+          const percentual = totalItens > 0 ? Math.round((itensConcluidos / totalItens) * 100) : 0;
+          const concluida = totalItens > 0 && itensConcluidos === totalItens;
+
+          return `
+            <div class="card checklist-card" data-checklist-id="${atividade.id}">
+              <div class="card-header">
+                <div>
+                  <h2>${h(atividade.titulo)}</h2>
+                  <p class="desc">
+                    Setor: ${h(atividade.setor)} • ${h(atividade.descricao || "Sem descrição")}
+                  </p>
+                  <p class="desc">
+                    Checklist do dia: <strong>${itensConcluidos}/${totalItens}</strong> itens concluídos • <strong>${percentual}%</strong>
+                  </p>
+                  <div class="progress">
+                    <div class="progress-bar" style="width:${percentual}%"></div>
+                  </div>
+                </div>
+
+                <span class="badge ${concluida ? "success" : "info"}">${concluida ? "Concluída" : "Em andamento"}</span>
+              </div>
+
+              ${atividade.itens.map((item, index) => {
+                const progressoItem = itensProgresso.find(p => {
+                  return Number(p.itemIndex) === index || p.item === item;
+                });
+
+                const jaConcluido = progressoItem && progressoItem.marcado;
+
+                return `
+                  <label class="check-item">
+                    <input
+                      type="checkbox"
+                      data-checklist-id="${atividade.id}"
+                      data-titulo="${h(atividade.titulo)}"
+                      data-total-itens="${totalItens}"
+                      data-item-index="${index}"
+                      data-item="${h(item)}"
+                      onchange="salvarItemChecklist(this)"
+                      ${jaConcluido ? "checked" : ""}
+                    />
+                    <span>${index + 1}. ${h(item)} ${jaConcluido ? "— concluído" : ""}</span>
+                  </label>
+                `;
+              }).join("")}
+
+              <div class="message ${concluida ? "success-text" : ""}">
+                ${concluida ? "Atividade concluída e enviada ao supervisor." : "Marque os itens conforme forem sendo feitos. Cada item marcado é salvo automaticamente."}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+      } catch (erro) {
+        area.innerHTML = `<div class="empty">Erro ao carregar atividades.</div>`;
+      }
+    }
+
+    async function salvarItemChecklist(check) {
+      const card = check.closest(".card");
+      const msg = card.querySelector(".message");
+      const valorAnterior = !check.checked;
+      const marcado = check.checked;
+
+      const dados = {
+        funcionarioId: usuarioAtual.id,
+        funcionario: usuarioAtual.nome,
+        usuario: usuarioAtual.usuario,
+        checklistId: Number(check.dataset.checklistId),
+        titulo: check.dataset.titulo,
+        totalItens: Number(check.dataset.totalItens),
+        itemIndex: Number(check.dataset.itemIndex),
+        item: check.dataset.item,
+        marcado
+      };
+
+      check.disabled = true;
+      msg.className = "message";
+      msg.textContent = marcado ? "Salvando item concluído..." : "Removendo marcação do item...";
+
+      try {
+        const resposta = await fetch(`${API_URL}/api/respostas/item`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dados)
+        });
+
+        if (!resposta.ok) {
+          throw new Error("Erro ao salvar item.");
+        }
+
+        msg.className = "message success-text";
+        msg.textContent = marcado
+          ? "Item marcado como concluído e enviado ao supervisor."
+          : "Marcação removida e supervisor atualizado.";
+
+        toast(marcado ? "Item concluído salvo." : "Marcação removida.");
+
+        await carregarAtividadesFuncionario();
+
+      } catch (erro) {
+        check.checked = valorAnterior;
+        check.disabled = false;
+        msg.className = "message danger-text";
+        msg.textContent = "Erro ao salvar alteração. Tente novamente.";
+      }
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>

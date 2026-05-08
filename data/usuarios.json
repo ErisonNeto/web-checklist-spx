@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "nome": "Supervisor",
+    "usuario": "admin",
+    "senha": "123456",
+    "perfil": "admin"
+  },
+  {
+    "id": 2,
+    "nome": "Funcionário Teste",
+    "usuario": "funcionario",
+    "senha": "123456",
+    "perfil": "funcionario"
+  },
+  {
+    "id": 1778187168254,
+    "nome": "Erison",
+    "usuario": "Eri_neto",
+    "senha": "123",
+    "perfil": "funcionario"
+  }
+]

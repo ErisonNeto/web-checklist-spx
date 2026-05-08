@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1,
+    "titulo": "Checklist de Entrada do Funcionário",
+    "setor": "Operação",
+    "descricao": "Conferência inicial antes do início da atividade.",
+    "funcionarioId": null,
+    "funcionarioNome": "Todos",
+    "ativo": true,
+    "itens": [
+      "Está usando uniforme completo?",
+      "Está usando crachá?",
+      "Está usando EPI obrigatório?",
+      "Recebeu orientação do líder?",
+      "Está apto para iniciar a atividade?"
+    ],
+    "dataCriacao": "07/05/2026, 17:51:28"
+  },
+  {
+    "id": 2,
+    "titulo": "Checklist de Saída do Funcionário",
+    "setor": "Operação",
+    "descricao": "Conferência ao finalizar o turno.",
+    "funcionarioId": null,
+    "funcionarioNome": "Todos",
+    "ativo": true,
+    "itens": [
+      "Finalizou as atividades do turno?",
+      "Organizou o posto de trabalho?",
+      "Informou pendências ao líder?",
+      "Devolveu equipamentos utilizados?",
+      "Registrou ocorrência, se houver?"
+    ],
+    "dataCriacao": "07/05/2026, 17:51:28"
+  },
+  {
+    "id": 1778187153298,
+    "titulo": "Conferencia",
+    "setor": "Ops",
+    "descricao": "Bipar pacote",
+    "funcionarioId": 2,
+    "funcionarioNome": "Funcionário Teste",
+    "ativo": true,
+    "itens": [
+      "a"
+    ],
+    "dataCriacao": "07/05/2026, 17:52:33"
+  }
+]
