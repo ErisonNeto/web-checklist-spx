@@ -140,7 +140,164 @@ router.delete("/:id", (req, res) => {
 
   res.json({
     mensagem: "Usuário excluído com sucesso."
-  });
+  });const express = require("express");
+const supabase = require("../supabaseClient");
+
+const router = express.Router();
+
+router.get("/", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nome, usuario, perfil")
+      .order("nome", { ascending: true });
+
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar usuários.",
+        detalhe: error.message
+      });
+    }
+
+    res.json(data || []);
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao listar usuários.",
+      detalhe: erro.message
+    });
+  }
+});
+
+router.post("/", async (req, res) => {
+  try {
+    const nome = String(req.body.nome || "").trim();
+    const usuario = String(req.body.usuario || "").trim();
+    const senha = String(req.body.senha || "").trim();
+    const perfil = String(req.body.perfil || "").trim();
+
+    if (!nome || !usuario || !senha || !perfil) {
+      return res.status(400).json({
+        mensagem: "Preencha nome, usuário, senha e perfil."
+      });
+    }
+
+    if (!["admin", "funcionario"].includes(perfil)) {
+      return res.status(400).json({
+        mensagem: "Perfil inválido."
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("usuarios")
+      .insert([
+        {
+          nome,
+          usuario,
+          senha,
+          perfil
+        }
+      ])
+      .select("id, nome, usuario, perfil")
+      .single();
+
+    if (error) {
+      if (error.code === "23505") {
+        return res.status(400).json({
+          mensagem: "Esse usuário já existe."
+        });
+      }
+
+      return res.status(500).json({
+        mensagem: "Erro ao criar usuário.",
+        detalhe: error.message
+      });
+    }
+
+    res.status(201).json({
+      mensagem: "Usuário criado com sucesso!",
+      usuario: data
+    });
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao criar usuário.",
+      detalhe: erro.message
+    });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!id) {
+      return res.status(400).json({
+        mensagem: "ID inválido."
+      });
+    }
+
+    const { data: usuarioEncontrado, error: erroBusca } = await supabase
+      .from("usuarios")
+      .select("id, perfil")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (erroBusca) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar usuário.",
+        detalhe: erroBusca.message
+      });
+    }
+
+    if (!usuarioEncontrado) {
+      return res.status(404).json({
+        mensagem: "Usuário não encontrado."
+      });
+    }
+
+    if (usuarioEncontrado.perfil === "admin") {
+      const { count, error: erroCount } = await supabase
+        .from("usuarios")
+        .select("id", { count: "exact", head: true })
+        .eq("perfil", "admin");
+
+      if (erroCount) {
+        return res.status(500).json({
+          mensagem: "Erro ao validar supervisores.",
+          detalhe: erroCount.message
+        });
+      }
+
+      if (count <= 1) {
+        return res.status(400).json({
+          mensagem: "Não é possível excluir o único supervisor/ADM."
+        });
+      }
+    }
+
+    const { error } = await supabase
+      .from("usuarios")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao excluir usuário.",
+        detalhe: error.message
+      });
+    }
+
+    res.json({
+      mensagem: "Usuário excluído com sucesso."
+    });
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao excluir usuário.",
+      detalhe: erro.message
+    });
+  }
+});
+
+module.exports = router;
 });
 
 module.exports = router;

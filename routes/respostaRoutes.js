@@ -1,154 +1,303 @@
 ﻿const express = require("express");
-const fs = require("fs");
-const path = require("path");
+const supabase = require("../supabaseClient");
 
 const router = express.Router();
 
-const dataDir = path.join(__dirname, "../data");
-const arquivoRespostas = path.join(dataDir, "respostas.json");
-const arquivoProgresso = path.join(dataDir, "progresso.json");
-const arquivoUsuarios = path.join(dataDir, "usuarios.json");
+function dataHojeBR() {
+  const agora = new Date();
 
-function garantirArquivos() {
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
+  const partes = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(agora);
 
-  if (!fs.existsSync(arquivoRespostas)) {
-    fs.writeFileSync(arquivoRespostas, "[]", "utf8");
-  }
+  const dia = partes.find((p) => p.type === "day").value;
+  const mes = partes.find((p) => p.type === "month").value;
+  const ano = partes.find((p) => p.type === "year").value;
 
-  if (!fs.existsSync(arquivoProgresso)) {
-    fs.writeFileSync(arquivoProgresso, "[]", "utf8");
-  }
+  return `${ano}-${mes}-${dia}`;
 }
 
-function lerJson(caminho, padrao = []) {
-  garantirArquivos();
+function dataHoraBR(valor) {
+  if (!valor) return "-";
 
-  if (!fs.existsSync(caminho)) {
-    return padrao;
-  }
-
-  const conteudo = fs.readFileSync(caminho, "utf8").replace(/^\uFEFF/, "");
-
-  try {
-    return JSON.parse(conteudo);
-  } catch (erro) {
-    return padrao;
-  }
-}
-
-function salvarJson(caminho, dados) {
-  garantirArquivos();
-  fs.writeFileSync(caminho, JSON.stringify(dados, null, 2), "utf8");
-}
-
-function atualizarResumo(registro) {
-  const totalItens = Number(registro.totalItens) || registro.itens.length;
-  const itensConcluidos = registro.itens.filter((item) => item.marcado).length;
-  const percentual = totalItens > 0 ? Math.round((itensConcluidos / totalItens) * 100) : 0;
-
-  registro.totalItens = totalItens;
-  registro.itensConcluidos = itensConcluidos;
-  registro.percentual = percentual;
-  registro.status = percentual === 100 ? "Completo" : "Em andamento";
-
-  return registro;
-}
-
-function buscarOuCriarProgresso(progresso, dados, agora) {
-  const indice = progresso.findIndex((item) => {
-    return Number(item.funcionarioId) === Number(dados.funcionarioId)
-      && Number(item.checklistId) === Number(dados.checklistId);
+  return new Date(valor).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo"
   });
+}
 
-  if (indice >= 0) {
-    return {
-      indice,
-      registro: progresso[indice]
-    };
+async function buscarOuCriarProgresso(dados, dataReferencia) {
+  const { data: existente, error: erroBusca } = await supabase
+    .from("progresso_diario")
+    .select("*")
+    .eq("data_referencia", dataReferencia)
+    .eq("funcionario_id", dados.funcionarioId)
+    .eq("checklist_id", dados.checklistId)
+    .maybeSingle();
+
+  if (erroBusca) {
+    throw new Error(erroBusca.message);
   }
 
+  if (existente) {
+    return existente;
+  }
+
+  const { data: criado, error: erroCriar } = await supabase
+    .from("progresso_diario")
+    .insert([
+      {
+        data_referencia: dataReferencia,
+        funcionario_id: dados.funcionarioId,
+        funcionario: dados.funcionario || "Não informado",
+        usuario: dados.usuario || "Não informado",
+        checklist_id: dados.checklistId,
+        titulo: dados.titulo,
+        total_itens: Number(dados.totalItens) || 0,
+        itens_concluidos: 0,
+        percentual: 0,
+        status: "Em andamento"
+      }
+    ])
+    .select("*")
+    .single();
+
+  if (erroCriar) {
+    throw new Error(erroCriar.message);
+  }
+
+  return criado;
+}
+
+async function recalcularProgresso(progressoId, totalItens) {
+  const { data: itens, error: erroItens } = await supabase
+    .from("progresso_itens")
+    .select("*")
+    .eq("progresso_id", progressoId);
+
+  if (erroItens) {
+    throw new Error(erroItens.message);
+  }
+
+  const itensConcluidos = (itens || []).filter((item) => item.marcado).length;
+  const percentual = totalItens > 0 ? Math.round((itensConcluidos / totalItens) * 100) : 0;
+  const status = percentual === 100 ? "Completo" : "Em andamento";
+
+  const { data: atualizado, error: erroAtualizar } = await supabase
+    .from("progresso_diario")
+    .update({
+      total_itens: totalItens,
+      itens_concluidos: itensConcluidos,
+      percentual,
+      status,
+      atualizado_em: new Date().toISOString()
+    })
+    .eq("id", progressoId)
+    .select("*")
+    .single();
+
+  if (erroAtualizar) {
+    throw new Error(erroAtualizar.message);
+  }
+
+  return atualizado;
+}
+
+function formatarProgresso(item, itens = []) {
   return {
-    indice: -1,
-    registro: {
-      id: Date.now(),
-      funcionarioId: dados.funcionarioId,
-      funcionario: dados.funcionario || "Não informado",
-      usuario: dados.usuario || "Não informado",
-      checklistId: dados.checklistId,
-      titulo: dados.titulo,
-      totalItens: Number(dados.totalItens) || 0,
-      itensConcluidos: 0,
-      percentual: 0,
-      status: "Em andamento",
-      itens: [],
-      dataCriacao: agora,
-      dataAtualizacao: agora
-    }
+    id: item.id,
+    dataReferencia: item.data_referencia,
+    funcionarioId: item.funcionario_id,
+    funcionario: item.funcionario,
+    usuario: item.usuario,
+    checklistId: item.checklist_id,
+    titulo: item.titulo,
+    totalItens: item.total_itens,
+    itensConcluidos: item.itens_concluidos,
+    percentual: item.percentual,
+    status: item.status,
+    dataCriacao: dataHoraBR(item.criado_em),
+    dataAtualizacao: dataHoraBR(item.atualizado_em),
+    itens: itens.map((i) => ({
+      itemIndex: i.item_index,
+      item: i.item,
+      marcado: i.marcado,
+      dataConclusao: dataHoraBR(i.data_conclusao),
+      dataAlteracao: dataHoraBR(i.atualizado_em)
+    }))
   };
 }
 
-router.get("/", (req, res) => {
-  const respostas = lerJson(arquivoRespostas, []);
-  res.json(respostas);
+router.get("/", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("historico_respostas")
+      .select("*")
+      .order("data_hora", { ascending: true });
+
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar histórico.",
+        detalhe: error.message
+      });
+    }
+
+    const resultado = (data || []).map((item) => ({
+      id: item.id,
+      tipo: item.tipo,
+      dataReferencia: item.data_referencia,
+      funcionarioId: item.funcionario_id,
+      funcionario: item.funcionario,
+      usuario: item.usuario,
+      checklistId: item.checklist_id,
+      titulo: item.titulo,
+      itemIndex: item.item_index,
+      item: item.item,
+      totalItens: item.total_itens,
+      itensMarcados: item.itens_marcados,
+      percentual: item.percentual,
+      status: item.status,
+      dataHora: dataHoraBR(item.data_hora)
+    }));
+
+    res.json(resultado);
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao buscar histórico.",
+      detalhe: erro.message
+    });
+  }
 });
 
-router.get("/progresso/:funcionarioId", (req, res) => {
-  const funcionarioId = Number(req.params.funcionarioId);
-  const progresso = lerJson(arquivoProgresso, []);
+router.get("/progresso/:funcionarioId", async (req, res) => {
+  try {
+    const funcionarioId = Number(req.params.funcionarioId);
+    const dataReferencia = req.query.data || dataHojeBR();
 
-  const progressoFuncionario = progresso.filter((item) => {
-    return Number(item.funcionarioId) === funcionarioId;
-  });
+    const { data: progressos, error } = await supabase
+      .from("progresso_diario")
+      .select("*")
+      .eq("funcionario_id", funcionarioId)
+      .eq("data_referencia", dataReferencia);
 
-  res.json(progressoFuncionario);
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar progresso.",
+        detalhe: error.message
+      });
+    }
+
+    if (!progressos || progressos.length === 0) {
+      return res.json([]);
+    }
+
+    const ids = progressos.map((item) => item.id);
+
+    const { data: itens, error: erroItens } = await supabase
+      .from("progresso_itens")
+      .select("*")
+      .in("progresso_id", ids)
+      .order("item_index", { ascending: true });
+
+    if (erroItens) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar itens do progresso.",
+        detalhe: erroItens.message
+      });
+    }
+
+    const resultado = progressos.map((progresso) => {
+      const itensDoProgresso = (itens || []).filter((item) => {
+        return Number(item.progresso_id) === Number(progresso.id);
+      });
+
+      return formatarProgresso(progresso, itensDoProgresso);
+    });
+
+    res.json(resultado);
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao buscar progresso.",
+      detalhe: erro.message
+    });
+  }
 });
 
-router.get("/conclusoes", (req, res) => {
-  const progresso = lerJson(arquivoProgresso, []);
-  res.json(progresso);
+router.get("/conclusoes", async (req, res) => {
+  try {
+    const dataReferencia = req.query.data || dataHojeBR();
+
+    const { data, error } = await supabase
+      .from("progresso_diario")
+      .select("*")
+      .eq("data_referencia", dataReferencia)
+      .order("atualizado_em", { ascending: true });
+
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar conclusões.",
+        detalhe: error.message
+      });
+    }
+
+    const resultado = (data || []).map((item) => formatarProgresso(item, []));
+
+    res.json(resultado);
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao buscar conclusões.",
+      detalhe: erro.message
+    });
+  }
 });
 
-router.get("/dashboard", (req, res) => {
-  const progresso = lerJson(arquivoProgresso, []);
-  const usuarios = lerJson(arquivoUsuarios, []);
+router.get("/dashboard", async (req, res) => {
+  try {
+    const dataReferencia = req.query.data || dataHojeBR();
 
-  const total = progresso.length;
-  const completos = progresso.filter((item) => item.status === "Completo").length;
-  const incompletos = progresso.filter((item) => item.status !== "Completo").length;
+    const { data: progressos, error } = await supabase
+      .from("progresso_diario")
+      .select("*")
+      .eq("data_referencia", dataReferencia);
 
-  const mediaGeral = total > 0
-    ? Math.round(progresso.reduce((soma, item) => soma + (Number(item.percentual) || 0), 0) / total)
-    : 0;
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar dashboard.",
+        detalhe: error.message
+      });
+    }
 
-  const funcionarios = usuarios.filter((item) => item.perfil === "funcionario");
+    const { data: usuarios, error: erroUsuarios } = await supabase
+      .from("usuarios")
+      .select("id, nome, usuario, perfil")
+      .eq("perfil", "funcionario");
 
-  const mapa = {};
+    if (erroUsuarios) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar funcionários.",
+        detalhe: erroUsuarios.message
+      });
+    }
 
-  funcionarios.forEach((funcionario) => {
-    mapa[funcionario.id] = {
-      funcionarioId: funcionario.id,
-      funcionario: funcionario.nome,
-      usuario: funcionario.usuario,
-      total: 0,
-      completos: 0,
-      incompletos: 0,
-      somaPercentual: 0,
-      media: 0,
-      ultimaAtividade: "-"
-    };
-  });
+    const lista = progressos || [];
 
-  progresso.forEach((item) => {
-    const chave = item.funcionarioId || item.usuario || item.funcionario;
+    const total = lista.length;
+    const completos = lista.filter((item) => item.status === "Completo").length;
+    const incompletos = lista.filter((item) => item.status !== "Completo").length;
 
-    if (!mapa[chave]) {
-      mapa[chave] = {
-        funcionarioId: item.funcionarioId || null,
-        funcionario: item.funcionario || "Não informado",
-        usuario: item.usuario || "-",
+    const mediaGeral = total > 0
+      ? Math.round(lista.reduce((soma, item) => soma + (Number(item.percentual) || 0), 0) / total)
+      : 0;
+
+    const mapa = {};
+
+    (usuarios || []).forEach((funcionario) => {
+      mapa[funcionario.id] = {
+        funcionarioId: funcionario.id,
+        funcionario: funcionario.nome,
+        usuario: funcionario.usuario,
         total: 0,
         completos: 0,
         incompletos: 0,
@@ -156,118 +305,150 @@ router.get("/dashboard", (req, res) => {
         media: 0,
         ultimaAtividade: "-"
       };
-    }
+    });
 
-    mapa[chave].total += 1;
-    mapa[chave].somaPercentual += Number(item.percentual) || 0;
-    mapa[chave].ultimaAtividade = item.dataAtualizacao || "-";
+    lista.forEach((item) => {
+      const chave = item.funcionario_id;
 
-    if (item.status === "Completo") {
-      mapa[chave].completos += 1;
-    } else {
-      mapa[chave].incompletos += 1;
-    }
-  });
+      if (!mapa[chave]) {
+        mapa[chave] = {
+          funcionarioId: item.funcionario_id,
+          funcionario: item.funcionario || "Não informado",
+          usuario: item.usuario || "-",
+          total: 0,
+          completos: 0,
+          incompletos: 0,
+          somaPercentual: 0,
+          media: 0,
+          ultimaAtividade: "-"
+        };
+      }
 
-  const porFuncionario = Object.values(mapa).map((item) => ({
-    ...item,
-    media: item.total > 0 ? Math.round(item.somaPercentual / item.total) : 0
-  }));
+      mapa[chave].total += 1;
+      mapa[chave].somaPercentual += Number(item.percentual) || 0;
+      mapa[chave].ultimaAtividade = dataHoraBR(item.atualizado_em);
 
-  res.json({
-    total,
-    completos,
-    incompletos,
-    mediaGeral,
-    porFuncionario
-  });
+      if (item.status === "Completo") {
+        mapa[chave].completos += 1;
+      } else {
+        mapa[chave].incompletos += 1;
+      }
+    });
+
+    const porFuncionario = Object.values(mapa).map((item) => ({
+      ...item,
+      media: item.total > 0 ? Math.round(item.somaPercentual / item.total) : 0
+    }));
+
+    res.json({
+      dataReferencia,
+      total,
+      completos,
+      incompletos,
+      mediaGeral,
+      porFuncionario
+    });
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao gerar dashboard.",
+      detalhe: erro.message
+    });
+  }
 });
 
-router.post("/item", (req, res) => {
-  const agora = new Date().toLocaleString("pt-BR");
+router.post("/item", async (req, res) => {
+  try {
+    const dataReferencia = req.body.dataReferencia || dataHojeBR();
 
-  const progresso = lerJson(arquivoProgresso, []);
-  const respostas = lerJson(arquivoRespostas, []);
+    const dados = {
+      funcionarioId: Number(req.body.funcionarioId),
+      funcionario: req.body.funcionario || "Não informado",
+      usuario: req.body.usuario || "Não informado",
+      checklistId: Number(req.body.checklistId),
+      titulo: req.body.titulo,
+      totalItens: Number(req.body.totalItens) || 0,
+      itemIndex: Number(req.body.itemIndex),
+      item: req.body.item,
+      marcado: Boolean(req.body.marcado)
+    };
 
-  const dados = {
-    funcionarioId: req.body.funcionarioId,
-    funcionario: req.body.funcionario,
-    usuario: req.body.usuario,
-    checklistId: req.body.checklistId,
-    titulo: req.body.titulo,
-    totalItens: req.body.totalItens,
-    itemIndex: Number(req.body.itemIndex),
-    item: req.body.item,
-    marcado: Boolean(req.body.marcado)
-  };
+    if (!dados.funcionarioId || !dados.checklistId || dados.itemIndex < 0 || !dados.item) {
+      return res.status(400).json({
+        mensagem: "Dados inválidos para salvar item."
+      });
+    }
 
-  if (!dados.funcionarioId || !dados.checklistId || dados.itemIndex < 0 || !dados.item) {
-    return res.status(400).json({
-      mensagem: "Dados inválidos para salvar item."
+    const progresso = await buscarOuCriarProgresso(dados, dataReferencia);
+
+    const { error: erroItem } = await supabase
+      .from("progresso_itens")
+      .upsert(
+        [
+          {
+            progresso_id: progresso.id,
+            item_index: dados.itemIndex,
+            item: dados.item,
+            marcado: dados.marcado,
+            data_conclusao: dados.marcado ? new Date().toISOString() : null,
+            atualizado_em: new Date().toISOString()
+          }
+        ],
+        {
+          onConflict: "progresso_id,item_index"
+        }
+      );
+
+    if (erroItem) {
+      return res.status(500).json({
+        mensagem: "Erro ao salvar item.",
+        detalhe: erroItem.message
+      });
+    }
+
+    const progressoAtualizado = await recalcularProgresso(
+      progresso.id,
+      dados.totalItens
+    );
+
+    const { error: erroHistorico } = await supabase
+      .from("historico_respostas")
+      .insert([
+        {
+          data_referencia: dataReferencia,
+          tipo: dados.marcado ? "ITEM_CONCLUIDO" : "ITEM_DESMARCADO",
+          funcionario_id: dados.funcionarioId,
+          funcionario: dados.funcionario,
+          usuario: dados.usuario,
+          checklist_id: dados.checklistId,
+          titulo: dados.titulo,
+          item_index: dados.itemIndex,
+          item: dados.item,
+          total_itens: progressoAtualizado.total_itens,
+          itens_marcados: progressoAtualizado.itens_concluidos,
+          percentual: progressoAtualizado.percentual,
+          status: progressoAtualizado.status === "Completo" ? "Completo" : "Incompleto"
+        }
+      ]);
+
+    if (erroHistorico) {
+      return res.status(500).json({
+        mensagem: "Item salvo, mas houve erro ao registrar histórico.",
+        detalhe: erroHistorico.message
+      });
+    }
+
+    res.status(201).json({
+      mensagem: dados.marcado
+        ? "Item concluído e salvo com sucesso."
+        : "Marcação removida com sucesso.",
+      progresso: formatarProgresso(progressoAtualizado, [])
+    });
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao salvar item.",
+      detalhe: erro.message
     });
   }
-
-  const { indice, registro } = buscarOuCriarProgresso(progresso, dados, agora);
-
-  registro.funcionario = dados.funcionario || registro.funcionario;
-  registro.usuario = dados.usuario || registro.usuario;
-  registro.titulo = dados.titulo || registro.titulo;
-  registro.totalItens = Number(dados.totalItens) || registro.totalItens;
-  registro.dataAtualizacao = agora;
-
-  const itemExistente = registro.itens.find((item) => {
-    return Number(item.itemIndex) === Number(dados.itemIndex);
-  });
-
-  if (itemExistente) {
-    itemExistente.marcado = dados.marcado;
-    itemExistente.dataConclusao = dados.marcado ? (itemExistente.dataConclusao || agora) : null;
-    itemExistente.dataAlteracao = agora;
-  } else {
-    registro.itens.push({
-      itemIndex: dados.itemIndex,
-      item: dados.item,
-      marcado: dados.marcado,
-      dataConclusao: dados.marcado ? agora : null,
-      dataAlteracao: agora
-    });
-  }
-
-  atualizarResumo(registro);
-
-  if (indice >= 0) {
-    progresso[indice] = registro;
-  } else {
-    progresso.push(registro);
-  }
-
-  salvarJson(arquivoProgresso, progresso);
-
-  respostas.push({
-    id: Date.now(),
-    tipo: dados.marcado ? "ITEM_CONCLUIDO" : "ITEM_DESMARCADO",
-    funcionarioId: dados.funcionarioId,
-    funcionario: dados.funcionario || "Não informado",
-    usuario: dados.usuario || "Não informado",
-    checklistId: dados.checklistId,
-    titulo: dados.titulo,
-    itemIndex: dados.itemIndex,
-    item: dados.item,
-    totalItens: registro.totalItens,
-    itensMarcados: registro.itensConcluidos,
-    percentual: registro.percentual,
-    status: registro.status === "Completo" ? "Completo" : "Incompleto",
-    dataHora: agora
-  });
-
-  salvarJson(arquivoRespostas, respostas);
-
-  res.status(201).json({
-    mensagem: dados.marcado
-      ? "Item concluído e salvo com sucesso."
-      : "Marcação removida com sucesso.",
-    progresso: registro
-  });
 });
 
 module.exports = router;

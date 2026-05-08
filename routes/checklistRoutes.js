@@ -1,150 +1,198 @@
 ﻿const express = require("express");
-const fs = require("fs");
-const path = require("path");
+const supabase = require("../supabaseClient");
 
 const router = express.Router();
 
-const dataDir = path.join(__dirname, "../data");
-const arquivoChecklists = path.join(dataDir, "checklists.json");
+function montarChecklist(checklist, itens) {
+  const itensDoChecklist = itens
+    .filter((item) => Number(item.checklist_id) === Number(checklist.id))
+    .sort((a, b) => Number(a.item_index) - Number(b.item_index));
 
-function garantirArquivo() {
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-
-  if (!fs.existsSync(arquivoChecklists)) {
-    const iniciais = [
-      {
-        id: 1,
-        titulo: "Checklist de Entrada do Funcionário",
-        setor: "Operação",
-        descricao: "Conferência inicial antes do início da atividade.",
-        funcionarioId: null,
-        funcionarioNome: "Todos",
-        ativo: true,
-        itens: [
-          "Está usando uniforme completo?",
-          "Está usando crachá?",
-          "Está usando EPI obrigatório?",
-          "Recebeu orientação do líder?",
-          "Está apto para iniciar a atividade?"
-        ],
-        dataCriacao: new Date().toLocaleString("pt-BR")
-      },
-      {
-        id: 2,
-        titulo: "Checklist de Saída do Funcionário",
-        setor: "Operação",
-        descricao: "Conferência ao finalizar o turno.",
-        funcionarioId: null,
-        funcionarioNome: "Todos",
-        ativo: true,
-        itens: [
-          "Finalizou as atividades do turno?",
-          "Organizou o posto de trabalho?",
-          "Informou pendências ao líder?",
-          "Devolveu equipamentos utilizados?",
-          "Registrou ocorrência, se houver?"
-        ],
-        dataCriacao: new Date().toLocaleString("pt-BR")
-      }
-    ];
-
-    fs.writeFileSync(arquivoChecklists, JSON.stringify(iniciais, null, 2), "utf8");
-  }
-}
-
-function lerChecklists() {
-  garantirArquivo();
-
-  const conteudo = fs.readFileSync(arquivoChecklists, "utf8").replace(/^\uFEFF/, "");
-
-  try {
-    return JSON.parse(conteudo);
-  } catch (erro) {
-    return [];
-  }
-}
-
-function salvarChecklists(checklists) {
-  garantirArquivo();
-  fs.writeFileSync(arquivoChecklists, JSON.stringify(checklists, null, 2), "utf8");
-}
-
-router.get("/", (req, res) => {
-  const funcionarioId = req.query.funcionarioId ? Number(req.query.funcionarioId) : null;
-  let checklists = lerChecklists();
-
-  checklists = checklists.filter((item) => item.ativo !== false);
-
-  if (funcionarioId) {
-    checklists = checklists.filter((item) => {
-      return !item.funcionarioId || Number(item.funcionarioId) === funcionarioId;
-    });
-  }
-
-  res.json(checklists);
-});
-
-router.post("/", (req, res) => {
-  const { titulo, setor, descricao, funcionarioId, funcionarioNome } = req.body;
-
-  let itens = req.body.itens || [];
-
-  if (typeof itens === "string") {
-    itens = itens
-      .split("\n")
-      .map((item) => item.trim())
-      .filter((item) => item.length > 0);
-  }
-
-  if (!titulo || !setor || itens.length === 0) {
-    return res.status(400).json({
-      mensagem: "Preencha título, setor e pelo menos um item."
-    });
-  }
-
-  const checklists = lerChecklists();
-
-  const novoChecklist = {
-    id: Date.now(),
-    titulo,
-    setor,
-    descricao: descricao || "",
-    funcionarioId: funcionarioId ? Number(funcionarioId) : null,
-    funcionarioNome: funcionarioNome || "Todos",
-    ativo: true,
-    itens,
-    dataCriacao: new Date().toLocaleString("pt-BR")
+  return {
+    id: checklist.id,
+    titulo: checklist.titulo,
+    setor: checklist.setor,
+    descricao: checklist.descricao || "",
+    funcionarioId: checklist.funcionario_id || null,
+    funcionarioNome: checklist.funcionario_nome || "Todos",
+    ativo: checklist.ativo,
+    itens: itensDoChecklist.map((item) => item.texto),
+    dataCriacao: checklist.criado_em
   };
+}
 
-  checklists.push(novoChecklist);
-  salvarChecklists(checklists);
+router.get("/", async (req, res) => {
+  try {
+    const funcionarioId = req.query.funcionarioId
+      ? Number(req.query.funcionarioId)
+      : null;
 
-  res.status(201).json({
-    mensagem: "Atividade criada com sucesso!",
-    checklist: novoChecklist
-  });
-});
+    let query = supabase
+      .from("checklists")
+      .select("id, titulo, setor, descricao, funcionario_id, funcionario_nome, ativo, criado_em")
+      .eq("ativo", true)
+      .order("id", { ascending: true });
 
-router.delete("/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const checklists = lerChecklists();
+    if (funcionarioId) {
+      query = query.or(`funcionario_id.is.null,funcionario_id.eq.${funcionarioId}`);
+    }
 
-  const existe = checklists.find((item) => Number(item.id) === id);
+    const { data: checklists, error } = await query;
 
-  if (!existe) {
-    return res.status(404).json({
-      mensagem: "Atividade não encontrada."
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar checklists.",
+        detalhe: error.message
+      });
+    }
+
+    if (!checklists || checklists.length === 0) {
+      return res.json([]);
+    }
+
+    const ids = checklists.map((item) => item.id);
+
+    const { data: itens, error: erroItens } = await supabase
+      .from("checklist_itens")
+      .select("id, checklist_id, item_index, texto")
+      .in("checklist_id", ids)
+      .order("item_index", { ascending: true });
+
+    if (erroItens) {
+      return res.status(500).json({
+        mensagem: "Erro ao buscar itens dos checklists.",
+        detalhe: erroItens.message
+      });
+    }
+
+    const resultado = checklists.map((checklist) => {
+      return montarChecklist(checklist, itens || []);
+    });
+
+    res.json(resultado);
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao listar checklists.",
+      detalhe: erro.message
     });
   }
+});
 
-  const atualizados = checklists.filter((item) => Number(item.id) !== id);
-  salvarChecklists(atualizados);
+router.post("/", async (req, res) => {
+  try {
+    const titulo = String(req.body.titulo || "").trim();
+    const setor = String(req.body.setor || "").trim();
+    const descricao = String(req.body.descricao || "").trim();
+    const funcionarioId = req.body.funcionarioId ? Number(req.body.funcionarioId) : null;
+    const funcionarioNome = req.body.funcionarioNome || "Todos";
 
-  res.json({
-    mensagem: "Atividade excluída com sucesso."
-  });
+    let itens = req.body.itens || [];
+
+    if (typeof itens === "string") {
+      itens = itens
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    if (!titulo || !setor || !Array.isArray(itens) || itens.length === 0) {
+      return res.status(400).json({
+        mensagem: "Preencha título, setor e pelo menos um item."
+      });
+    }
+
+    const { data: checklist, error } = await supabase
+      .from("checklists")
+      .insert([
+        {
+          titulo,
+          setor,
+          descricao,
+          funcionario_id: funcionarioId,
+          funcionario_nome: funcionarioNome,
+          ativo: true
+        }
+      ])
+      .select("id, titulo, setor, descricao, funcionario_id, funcionario_nome, ativo, criado_em")
+      .single();
+
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao criar atividade.",
+        detalhe: error.message
+      });
+    }
+
+    const itensParaInserir = itens.map((texto, index) => ({
+      checklist_id: checklist.id,
+      item_index: index,
+      texto
+    }));
+
+    const { error: erroItens } = await supabase
+      .from("checklist_itens")
+      .insert(itensParaInserir);
+
+    if (erroItens) {
+      return res.status(500).json({
+        mensagem: "Atividade criada, mas houve erro ao salvar os itens.",
+        detalhe: erroItens.message
+      });
+    }
+
+    res.status(201).json({
+      mensagem: "Atividade criada com sucesso!",
+      checklist: {
+        id: checklist.id,
+        titulo: checklist.titulo,
+        setor: checklist.setor,
+        descricao: checklist.descricao || "",
+        funcionarioId: checklist.funcionario_id || null,
+        funcionarioNome: checklist.funcionario_nome || "Todos",
+        ativo: checklist.ativo,
+        itens,
+        dataCriacao: checklist.criado_em
+      }
+    });
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao criar checklist.",
+      detalhe: erro.message
+    });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!id) {
+      return res.status(400).json({
+        mensagem: "ID inválido."
+      });
+    }
+
+    const { error } = await supabase
+      .from("checklists")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao excluir atividade.",
+        detalhe: error.message
+      });
+    }
+
+    res.json({
+      mensagem: "Atividade excluída com sucesso."
+    });
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno ao excluir checklist.",
+      detalhe: erro.message
+    });
+  }
 });
 
 module.exports = router;

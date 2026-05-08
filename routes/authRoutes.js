@@ -1,55 +1,54 @@
 ﻿const express = require("express");
-const fs = require("fs");
-const path = require("path");
+const supabase = require("../supabaseClient");
 
 const router = express.Router();
 
-const arquivoUsuarios = path.join(__dirname, "../data/usuarios.json");
-
-function lerUsuarios() {
-  if (!fs.existsSync(arquivoUsuarios)) {
-    return [];
-  }
-
-  const conteudo = fs.readFileSync(arquivoUsuarios, "utf8").replace(/^\uFEFF/, "");
-
+router.post("/login", async (req, res) => {
   try {
-    return JSON.parse(conteudo);
-  } catch (erro) {
-    return [];
-  }
-}
+    const usuario = String(req.body.usuario || "").trim();
+    const senha = String(req.body.senha || "").trim();
 
-router.post("/login", (req, res) => {
-  const { usuario, senha } = req.body;
-
-  if (!usuario || !senha) {
-    return res.status(400).json({
-      mensagem: "Informe usuário e senha."
-    });
-  }
-
-  const usuarios = lerUsuarios();
-
-  const usuarioEncontrado = usuarios.find((item) => {
-    return item.usuario === usuario && item.senha === senha;
-  });
-
-  if (!usuarioEncontrado) {
-    return res.status(401).json({
-      mensagem: "Usuário ou senha inválidos."
-    });
-  }
-
-  res.json({
-    mensagem: "Login realizado com sucesso!",
-    usuario: {
-      id: usuarioEncontrado.id,
-      nome: usuarioEncontrado.nome,
-      usuario: usuarioEncontrado.usuario,
-      perfil: usuarioEncontrado.perfil
+    if (!usuario || !senha) {
+      return res.status(400).json({
+        mensagem: "Informe usuário e senha."
+      });
     }
-  });
+
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nome, usuario, senha, perfil")
+      .eq("usuario", usuario)
+      .eq("senha", senha)
+      .maybeSingle();
+
+    if (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao consultar usuário.",
+        detalhe: error.message
+      });
+    }
+
+    if (!data) {
+      return res.status(401).json({
+        mensagem: "Usuário ou senha inválidos."
+      });
+    }
+
+    res.json({
+      mensagem: "Login realizado com sucesso!",
+      usuario: {
+        id: data.id,
+        nome: data.nome,
+        usuario: data.usuario,
+        perfil: data.perfil
+      }
+    });
+  } catch (erro) {
+    res.status(500).json({
+      mensagem: "Erro interno no login.",
+      detalhe: erro.message
+    });
+  }
 });
 
 module.exports = router;
