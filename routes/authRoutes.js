@@ -18,7 +18,6 @@ router.post("/login", async (req, res) => {
       .from("usuarios")
       .select("id, nome, usuario, senha, perfil")
       .eq("usuario", usuario)
-      .eq("senha", senha)
       .maybeSingle();
 
     if (error) {
@@ -30,11 +29,17 @@ router.post("/login", async (req, res) => {
 
     if (!data) {
       return res.status(401).json({
-        mensagem: "Usuário ou senha inválidos."
+        mensagem: "Usuário não encontrado."
       });
     }
 
-    res.json({
+    if (String(data.senha).trim() !== senha) {
+      return res.status(401).json({
+        mensagem: "Senha inválida."
+      });
+    }
+
+    return res.json({
       mensagem: "Login realizado com sucesso!",
       usuario: {
         id: data.id,
@@ -44,7 +49,7 @@ router.post("/login", async (req, res) => {
       }
     });
   } catch (erro) {
-    res.status(500).json({
+    return res.status(500).json({
       mensagem: "Erro interno no login.",
       detalhe: erro.message
     });
