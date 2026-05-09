@@ -3,37 +3,54 @@ const supabase = require("../supabaseClient");
 
 const router = express.Router();
 
+function normalizarTexto(valor) {
+  return String(valor || "")
+    .normalize("NFKC")
+    .replace(/\u200B/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function normalizarSenha(valor) {
+  return String(valor || "")
+    .normalize("NFKC")
+    .replace(/\u200B/g, "")
+    .trim();
+}
+
 router.post("/login", async (req, res) => {
   try {
-    const usuario = String(req.body.usuario || "").trim();
-    const senha = String(req.body.senha || "").trim();
+    const usuarioDigitado = normalizarTexto(req.body.usuario);
+    const senhaDigitada = normalizarSenha(req.body.senha);
 
-    if (!usuario || !senha) {
+    if (!usuarioDigitado || !senhaDigitada) {
       return res.status(400).json({
         mensagem: "Informe usuário e senha."
       });
     }
 
-    const { data, error } = await supabase
+    const { data: usuarios, error } = await supabase
       .from("usuarios")
-      .select("id, nome, usuario, senha, perfil")
-      .eq("usuario", usuario)
-      .maybeSingle();
+      .select("id, nome, usuario, senha, perfil");
 
     if (error) {
       return res.status(500).json({
-        mensagem: "Erro ao consultar usuário.",
+        mensagem: "Erro ao consultar usuários.",
         detalhe: error.message
       });
     }
 
-    if (!data) {
+    const usuarioEncontrado = (usuarios || []).find((item) => {
+      return normalizarTexto(item.usuario) === usuarioDigitado;
+    });
+
+    if (!usuarioEncontrado) {
       return res.status(401).json({
         mensagem: "Usuário não encontrado."
       });
     }
 
-    if (String(data.senha).trim() !== senha) {
+    if (normalizarSenha(usuarioEncontrado.senha) !== senhaDigitada) {
       return res.status(401).json({
         mensagem: "Senha inválida."
       });
@@ -42,10 +59,10 @@ router.post("/login", async (req, res) => {
     return res.json({
       mensagem: "Login realizado com sucesso!",
       usuario: {
-        id: data.id,
-        nome: data.nome,
-        usuario: data.usuario,
-        perfil: data.perfil
+        id: usuarioEncontrado.id,
+        nome: usuarioEncontrado.nome,
+        usuario: usuarioEncontrado.usuario,
+        perfil: usuarioEncontrado.perfil
       }
     });
   } catch (erro) {
